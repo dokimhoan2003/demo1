@@ -49,9 +49,12 @@ public class ProductController {
         if(productRequest.getImageFile().isEmpty()) {
             result.addError(new FieldError("productRequest","imageFile","The image is required"));
         }
-//        if(productRequest.getPrice() < 0) {
-//            result.addError(new FieldError("productRequest","price","Price must be greater than or equal 0"));
-//        }
+        if(productRequest.getImageFile().getSize() > 10*1024*1024) {
+            result.addError(new FieldError("productRequest","imageFile","File is too large! Maximum size is 10MB"));
+        }
+        if(!productRequest.getImageFile().getContentType().startsWith("image/")) {
+            result.addError(new FieldError("productRequest","imageFile","File invalid with extension: .jpg/.jpeg/.png"));
+        }
         if(result.hasErrors()) {
             return "products/create";
         }
@@ -91,7 +94,9 @@ public class ProductController {
         try {
             Product product = productService.getProductById(id);
             model.addAttribute("product",product);
-
+            if(!productRequest.getImageFile().getContentType().startsWith("image/")) {
+                result.addError(new FieldError("productRequest","imageFile","File invalid with extension: .jpg/.jpeg/.png"));
+            }
             if(result.hasErrors()) {
                 return "products/update";
             }
