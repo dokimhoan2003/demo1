@@ -54,6 +54,8 @@ public class ProductServiceImp implements ProductService {
         newProduct.setCreatedAt(createdAt);
         newProduct.setImage(storageFileName);
         newProduct.setCategory(productRequest.getCategory());
+        newProduct.setColor(productRequest.getColor());
+        newProduct.setFeatures(productRequest.getFeatures());
         return productRepository.save(newProduct);
     }
 
@@ -85,7 +87,8 @@ public class ProductServiceImp implements ProductService {
         product.setBrand(productRequest.getBrand());
         product.setPrice(productRequest.getPrice());
         product.setDescription(productRequest.getDescription());
-
+        product.setColor(productRequest.getColor());
+        product.setFeatures(productRequest.getFeatures());
         return productRepository.save(product);
     }
 

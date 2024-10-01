@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.util.Date;
 
+
 @Entity
 @Table(name = "products")
 @Data
@@ -28,5 +29,9 @@ public class Product {
     private Date createdAt;
 
     private String image;
+
+    private String color;
+
+    private String features;
 
 }

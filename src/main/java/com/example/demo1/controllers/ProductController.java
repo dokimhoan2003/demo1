@@ -49,6 +49,9 @@ public class ProductController {
         if(productRequest.getImageFile().isEmpty()) {
             result.addError(new FieldError("productRequest","imageFile","The image is required"));
         }
+//        if(productRequest.getPrice() < 0) {
+//            result.addError(new FieldError("productRequest","price","Price must be greater than or equal 0"));
+//        }
         if(result.hasErrors()) {
             return "products/create";
         }
@@ -68,6 +71,8 @@ public class ProductController {
             productRequest.setBrand(product.getBrand());
             productRequest.setDescription(product.getDescription());
             productRequest.setCategory(product.getCategory());
+            productRequest.setFeatures(product.getFeatures());
+            productRequest.setColor(product.getColor());
             model.addAttribute("productRequest",productRequest);
 
             return "products/update";
