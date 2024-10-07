@@ -11,4 +11,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p WHERE p.name LIKE %:keyword% OR p.category LIKE %:keyword% OR p.color LIKE %:keyword% " )
     List<Product> findByName(@Param("keyword") String keyword);
+
+    boolean existsByName(String name);
 }

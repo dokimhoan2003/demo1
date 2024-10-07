@@ -3,7 +3,9 @@ package com.example.demo1.services;
 
 import com.example.demo1.models.Product;
 import com.example.demo1.request.ProductRequest;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ProductService {
@@ -18,4 +20,7 @@ public interface ProductService {
     public Product getProductById(Long id) throws Exception;
 
     public List<Product> searchProduct(String keyword);
+
+    public boolean existsByName(String name);
+
 }

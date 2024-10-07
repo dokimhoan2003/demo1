@@ -1,16 +1,22 @@
 package com.example.demo1.controllers;
 
 import com.example.demo1.models.Product;
+import com.example.demo1.repository.ProductRepository;
 import com.example.demo1.request.ProductRequest;
 import com.example.demo1.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -18,7 +24,14 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
-    ProductService productService;
+    private ProductService productService;
+
+    @GetMapping("/check-name")
+    @ResponseBody
+    public ResponseEntity<Boolean> checkName(@RequestParam String name) {
+        return new ResponseEntity<>(productService.existsByName(name), HttpStatus.OK);
+    }
+
 
     @PostMapping("/search")
     public String searchProducts(@RequestParam String keyword, Model model) {
@@ -45,22 +58,21 @@ public class ProductController {
 
     @PostMapping("/create")
     public String createProduct(@Valid @ModelAttribute ProductRequest productRequest,
-                                BindingResult result) {
+                                BindingResult result, Model model) throws IOException {
         if(productRequest.getImageFile().isEmpty()) {
             result.addError(new FieldError("productRequest","imageFile","The image is required"));
         }
         if(productRequest.getImageFile().getSize() > 10*1024*1024) {
             result.addError(new FieldError("productRequest","imageFile","File is too large! Maximum size is 10MB"));
         }
-        if(!productRequest.getImageFile().getContentType().startsWith("image/")) {
-            result.addError(new FieldError("productRequest","imageFile","File invalid with extension: .jpg/.jpeg/.png"));
-        }
-        if(result.hasErrors()) {
+
+        if (result.hasErrors()) {
             return "products/create";
         }
         Product product = productService.createProduct(productRequest);
         return "redirect:/products";
     }
+
 
     @GetMapping("/update/{id}")
     public String updateProduct(Model model,@PathVariable Long id) {
@@ -94,9 +106,13 @@ public class ProductController {
         try {
             Product product = productService.getProductById(id);
             model.addAttribute("product",product);
-            if(!productRequest.getImageFile().getContentType().startsWith("image/")) {
-                result.addError(new FieldError("productRequest","imageFile","File invalid with extension: .jpg/.jpeg/.png"));
+            if(productRequest.getImageFile().getSize() > 10*1024*1024) {
+                result.addError(new FieldError("productRequest","imageFile","File is too large! Maximum size is 10MB"));
             }
+//            if(!productRequest.getImageFile().getContentType().startsWith("image/")) {
+//                result.addError(new FieldError("productRequest","imageFile","File invalid with extension: .jpg/.jpeg/.png"));
+//            }
+
             if(result.hasErrors()) {
                 return "products/update";
             }
