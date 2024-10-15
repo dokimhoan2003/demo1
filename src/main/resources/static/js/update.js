@@ -7,32 +7,58 @@
       const brandInput = document.getElementById("brandInput");
       const priceInput = document.getElementById("priceInput");
       const colorSelects = document.getElementsByName("color");
-      const imageFileInput = document.getElementById('imageFile');
+      const thumbnailFileInput = document.getElementById('thumbnailFile');
       const initialNameValue = nameInput.value;
+      const imageFilesInput = document.getElementById('imageFiles');
 
       const nameError = document.getElementById("nameError");
       const desError = document.getElementById("desError");
       const brandError = document.getElementById("brandError");
-      const fileError = document.getElementById("fileError");
       const priceError = document.getElementById("priceError");
       const colorError = document.getElementById("colorError");
+      const thumbnailError = document.getElementById("thumbnailError");
+       const imageFilesError = document.getElementById("imageFilesError");
 
       const maxSize = 10 * 1024 * 1024; // 10MB for file size
 
       // Immediate feedback for image file size on file change
-      imageFileInput.addEventListener('change', function(e) {
+      thumbnailFileInput.addEventListener('change', function(e) {
         var file = e.target.files[0];
         if (file) {
           if (file.size > maxSize) {
             isValid = false;
-            fileError.style.display = 'block';
-            fileError.textContent = 'File is too large! Maximum size is 10MB';
+            thumbnailError.style.display = 'block';
+            thumbnailError.textContent = 'File is too large! Maximum size is 10MB';
             e.target.value = '';
           } else {
-            fileError.style.display = 'none';
+            thumbnailError.style.display = 'none';
           }
         }
       });
+
+       imageFilesInput.addEventListener('change', function(e) {
+               var files = e.target.files;
+               if(files.length > 6) {
+                  isValid = false;
+                  imageFilesError.style.display = 'block';
+                  imageFilesError.textContent = 'Number detail image must be <= 6';
+                  e.target.value = '';
+               } else {
+                 for(var i=0;i<files.length;i++) {
+
+                   var file = files[i];
+                   if(file.size > maxSize) {
+                       isValid = false;
+                       imageFilesError.style.display = 'block';
+                       imageFilesError.textContent = `File ${file.name} is too large! Maximum size is 10MB`;
+                       e.target.value = '';
+                       break;
+                   }else {
+                       imageFilesError.style.display = 'none';
+                   }
+                 }
+               }
+          });
 
       // Form submission validation (including image file size)
       form.addEventListener("submit", async function(event) {
@@ -123,19 +149,6 @@
           colorError.style.display = "none";
         }
 
-        // Validate image file size again at form submission
-<!--        const file = imageFileInput.files[0];-->
-
-<!--         if (file) {-->
-<!--          if (file.size > maxSize) {-->
-<!--            isValid = false;-->
-<!--            fileError.style.display = 'block';-->
-<!--            fileError.textContent = 'File is too large! Maximum size is 10MB';-->
-<!--            e.target.value = '';-->
-<!--          } else {-->
-<!--            fileError.style.display = 'none';-->
-<!--          }-->
-<!--        }-->
 
         // Prevent form submission if any validation fails
         if (isValid) {

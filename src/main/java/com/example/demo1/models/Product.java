@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Entity
@@ -28,7 +29,11 @@ public class Product {
 
     private Date createdAt;
 
-    private String image;
+    private String thumbnail;
+
+    @Column(length = 1000)
+    @ElementCollection
+    private List<String> imageFiles;
 
     private String color;
 

@@ -52,11 +52,11 @@
         </div>
 
         <div class="row mb-3">
-          <label class="col-sm-4 col-form-label">Image</label>
+          <label class="col-sm-4 col-form-label">Thumbnail</label>
           <div class="col-sm-8">
-            <input class="form-control" type="file" id="imageFile" th:field="${productRequest.imageFile}">
-            <p th:if="${#fields.hasErrors('imageFile')}" th:errorclass="text-danger" th:errors="${productRequest.imageFile}"></p>
-            <p id="fileError" class="text-danger" style="display:none;"></p>
+            <input class="form-control" type="file" id="thumbnailFile" th:field="${productRequest.thumbnail}">
+            <p th:if="${#fields.hasErrors('thumbnail')}" th:errorclass="text-danger" th:errors="${productRequest.thumbnail}"></p>
+            <p id="thumbnailError" class="text-danger" style="display:none;"></p>
           </div>
         </div>
 
@@ -112,6 +112,15 @@
             </div>
             <p th:if="${#fields.hasErrors('color')}" th:errorclass="text-danger" th:errors="${productRequest.color}"></p>
             <p id="colorError" class="text-danger" style="display:none;"></p>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="col-sm-4 col-form-label">Detail Images</label>
+          <div class="col-sm-8">
+            <input class="form-control" type="file" id="imageFiles" th:field="${productRequest.imageFiles}" multiple>
+            <p th:if="${#fields.hasErrors('imageFiles')}" th:errors="${productRequest.imageFiles}" class="text-danger"></p>
+            <p id="imageFilesError" class="text-danger" style="display:none;"></p>
           </div>
         </div>
 

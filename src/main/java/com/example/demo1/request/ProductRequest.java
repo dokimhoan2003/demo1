@@ -4,6 +4,8 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 
 @Data
 public class ProductRequest {
@@ -23,7 +25,9 @@ public class ProductRequest {
 //    @Size(min=1, max=25,message = "The brand must be between  1 and 25 characters")
     private String brand;
 
-    private MultipartFile imageFile;
+    private MultipartFile thumbnail;
+
+    private List<MultipartFile> imageFiles;
 
 //    @NotEmpty(message = "Please select value")
     private String color;
