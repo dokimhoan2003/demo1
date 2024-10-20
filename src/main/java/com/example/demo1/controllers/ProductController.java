@@ -1,7 +1,10 @@
 package com.example.demo1.controllers;
 
 import com.example.demo1.models.Product;
+import com.example.demo1.models.ProductImage;
+import com.example.demo1.request.ProductImageRequest;
 import com.example.demo1.request.ProductRequest;
+import com.example.demo1.response.MessageResponse;
 import com.example.demo1.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +34,18 @@ public class ProductController {
     public ResponseEntity<Boolean> checkName(@RequestParam String name) {
         return new ResponseEntity<>(productService.existsByName(name), HttpStatus.OK);
     }
+
+
+
+    @GetMapping("/{id}/confirm-delete")
+    @ResponseBody
+    public ResponseEntity<MessageResponse> confirmDelete(@PathVariable Long id) throws Exception {
+            productService.deleteProduct(id);
+            MessageResponse messageResponse = new MessageResponse();
+            messageResponse.setMessage("Delete Successfully");
+            return new ResponseEntity<>(messageResponse,HttpStatus.OK);
+    }
+
 
     @PostMapping("/search")
     public String searchProducts(@RequestParam String keyword, Model model) {
@@ -86,6 +102,7 @@ public class ProductController {
             productRequest.setCategory(product.getCategory());
             productRequest.setFeatures(product.getFeatures());
             productRequest.setColor(product.getColor());
+
             model.addAttribute("productRequest",productRequest);
 
             return "products/update";
@@ -114,15 +131,5 @@ public class ProductController {
 
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteProduct(Model model,@PathVariable Long id) {
-        try {
-            productService.deleteProduct(id);
-            return "redirect:/products";
-        }catch (Exception e) {
-            System.out.println("Exception" + e.getMessage());
-            model.addAttribute("error",e.getMessage());
-            return "products/error";
-        }
-    }
+
 }

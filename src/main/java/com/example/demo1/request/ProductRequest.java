@@ -29,6 +29,7 @@ public class ProductRequest {
 
     private List<MultipartFile> imageFiles;
 
+
 //    @NotEmpty(message = "Please select value")
     private String color;
 

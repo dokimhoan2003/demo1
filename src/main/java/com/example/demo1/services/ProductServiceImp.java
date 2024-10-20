@@ -1,7 +1,10 @@
 package com.example.demo1.services;
 
 import com.example.demo1.models.Product;
+import com.example.demo1.models.ProductImage;
+import com.example.demo1.repository.ProductImageRepository;
 import com.example.demo1.repository.ProductRepository;
+import com.example.demo1.request.ProductImageRequest;
 import com.example.demo1.request.ProductRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -14,10 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +25,9 @@ public class ProductServiceImp implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private ProductImageRepository productImageRepository;
 
     @Override
     public List<Product> getAllProducts() {
@@ -37,8 +40,9 @@ public class ProductServiceImp implements ProductService {
         MultipartFile thumbnail = productRequest.getThumbnail();
         Date createdAt = new Date();
         String thumbnailFileName = createdAt.getTime() + "_" + thumbnail.getOriginalFilename();
+        String uploadDir = "public/images/";
+
         try {
-            String uploadDir = "public/images/";
             Path uploadPath = Paths.get(uploadDir);
             if(!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
@@ -61,26 +65,23 @@ public class ProductServiceImp implements ProductService {
         newProduct.setFeatures(productRequest.getFeatures());
         newProduct.setThumbnail(thumbnailFileName);
 
-        // Save details image
-        List<MultipartFile> images = productRequest.getImageFiles().stream().filter(image -> !image.isEmpty()).collect(Collectors.toList());
-        List<String> imageSaves = new ArrayList<>();
-        for(MultipartFile image: images) {
-            String storageFileName = new Date().getTime() + "_" + image.getOriginalFilename();
-            try {
-                String uploadDir = "public/images/";
-                Path uploadPath = Paths.get(uploadDir);
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-                try (InputStream inputStream = image.getInputStream()) {
+        List<MultipartFile> imageFiles = productRequest.getImageFiles();
+        List<ProductImage> productImages = new ArrayList<>();
+        for(MultipartFile imageFile: imageFiles) {
+            if(!imageFile.isEmpty()) {
+                String storageFileName = new Date().getTime() + "_" + imageFile.getOriginalFilename();
+                try (InputStream inputStream = imageFile.getInputStream()) {
                     Files.copy(inputStream, Paths.get(uploadDir + storageFileName), StandardCopyOption.REPLACE_EXISTING);
+                }catch (IOException e) {
+                    System.out.println("Exception:" + e.getMessage());
                 }
-                imageSaves.add(storageFileName);
-            }catch (Exception e) {
-                System.out.println("Exception:" + e.getMessage());
+                ProductImage newProductImage = new ProductImage();
+                newProductImage.setImageFile(storageFileName);
+                newProductImage.setProduct(newProduct);
+                productImages.add(newProductImage);
             }
         }
-        newProduct.setImageFiles(imageSaves);
+        newProduct.setProductImages(productImages);
         return productRepository.save(newProduct);
     }
 
@@ -119,32 +120,35 @@ public class ProductServiceImp implements ProductService {
         product.setColor(productRequest.getColor());
         product.setFeatures(productRequest.getFeatures());
 
-        // Update details image
-        List<MultipartFile> validImageFiles = productRequest.getImageFiles()
-                .stream()
-                .filter(file -> !file.isEmpty()) // lọc đi các file empty mặc định cuả trình duyệt
-                .collect(Collectors.toList());
+        // Update product image
+        List<MultipartFile> validImageFiles = productRequest.getImageFiles();
+
         if(!validImageFiles.isEmpty()) {
-            for(String oldImage: product.getImageFiles()) {
+            for(ProductImage productImage: product.getProductImages()) {
                 try {
-                    Files.delete(Paths.get(uploadDir + oldImage));
+                    Files.delete(Paths.get(uploadDir + productImage.getImageFile()));
                 } catch (Exception e) {
                     System.out.println("Exception: " + e.getMessage());
                 }
             }
 
-            List<String> newImages = new ArrayList<>();
+            List<ProductImage> productImages = product.getProductImages();
             for(MultipartFile imageFile : productRequest.getImageFiles()) {
                 if(!imageFile.isEmpty()) {
-                    String imageFileName = new Date().getTime() + "_" + imageFile.getOriginalFilename();
+                    String storageFileName = new Date().getTime() + "_" + imageFile.getOriginalFilename();
                     try (InputStream inputStream = imageFile.getInputStream()) {
-                        Files.copy(inputStream, Paths.get(uploadDir + imageFileName), StandardCopyOption.REPLACE_EXISTING);
+                        Files.copy(inputStream, Paths.get(uploadDir + storageFileName), StandardCopyOption.REPLACE_EXISTING);
                     }
-                    newImages.add(imageFileName);
+                    ProductImage newProductImage = new ProductImage();
+                    newProductImage.setImageFile(storageFileName);
+                    newProductImage.setProduct(product);
+                    productImages.add(newProductImage);
                 }
             }
-            product.setImageFiles(newImages);
+            product.setProductImages(productImages);
         }
+
+
         return productRepository.save(product);
     }
 
@@ -160,9 +164,9 @@ public class ProductServiceImp implements ProductService {
                 System.out.println("Exception: " + e.getMessage());
             }
             //delete details image đc save trên server
-            List<String> imageFiles = deleteProduct.getImageFiles();
-            for(String imageFile : imageFiles) {
-                Path imageFilePath = Paths.get("public/images/" + imageFile);
+            List<ProductImage> productImages = deleteProduct.getProductImages();
+            for(ProductImage productImage : productImages) {
+                Path imageFilePath = Paths.get("public/images/" + productImage.getImageFile());
                 try{
                     Files.delete(imageFilePath);
                 }catch (Exception e) {
@@ -194,5 +198,11 @@ public class ProductServiceImp implements ProductService {
     public boolean existsByName(String name) {
         return productRepository.existsByName(name);
     }
+
+    @Override
+    public List<ProductImage> getAllProductImage() {
+        return productImageRepository.findAll();
+    }
+
 
 }

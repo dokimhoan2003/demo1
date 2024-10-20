@@ -2,6 +2,8 @@ package com.example.demo1.services;
 
 
 import com.example.demo1.models.Product;
+import com.example.demo1.models.ProductImage;
+import com.example.demo1.request.ProductImageRequest;
 import com.example.demo1.request.ProductRequest;
 
 import java.util.List;
@@ -21,6 +23,6 @@ public interface ProductService {
 
     public boolean existsByName(String name);
 
-//    public ProductImage createProductImage(Long productId, ProductImageRequest productImageRequest) throws Exception;
+    public List<ProductImage> getAllProductImage();
 
 }

@@ -31,9 +31,8 @@ public class Product {
 
     private String thumbnail;
 
-    @Column(length = 1000)
-    @ElementCollection
-    private List<String> imageFiles;
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<ProductImage> productImages;
 
     private String color;
 

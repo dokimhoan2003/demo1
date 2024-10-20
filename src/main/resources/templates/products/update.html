@@ -1,155 +1,333 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>demo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+            rel="stylesheet"
+    />
     <script th:src="@{/js/update.js}"></script>
-</head>
-<body>
-<div class="container">
-    <div class="row">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
         <div class="col-md-8 mx-auto rounded border p-4 m-4">
-            <form method="post" enctype="multipart/form-data" th:object="${productRequest}">
-                <h2>Update a product</h2>
-                <div class="row mb-3">
-                    <label class="col-sm-4 col-form-label">ID</label>
-                    <div class="col-sm-8">
-                        <input class="form-control-plaintext" readonly th:value="${product.id}">
-                    </div>
+          <form
+            method="post"
+            enctype="multipart/form-data"
+            th:object="${productRequest}"
+          >
+            <h2>Update a product</h2>
+            <div class="row mb-3">
+              <label class="col-sm-4 col-form-label">ID</label>
+              <div class="col-sm-8">
+                <input
+                  class="form-control-plaintext"
+                  readonly
+                  th:value="${product.id}"
+                />
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label class="col-sm-4 col-form-label">Name</label>
+              <div class="col-sm-8">
+                <input
+                  class="form-control"
+                  id="nameInput"
+                  th:field="${productRequest.name}"
+                />
+                <p
+                  th:if="${#fields.hasErrors('name')}"
+                  th:errorclass="text-danger"
+                  th:errors="${productRequest.name}"
+                ></p>
+                <p id="nameError" class="text-danger" style="display: none"></p>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label class="col-sm-4 col-form-label">Price</label>
+              <div class="col-sm-8">
+                <input
+                  class="form-control"
+                  id="priceInput"
+                  th:field="${productRequest.price}"
+                />
+                <p
+                  th:if="${#fields.hasErrors('price')}"
+                  th:errorclass="text-danger"
+                  th:errors="${productRequest.price}"
+                ></p>
+                <p
+                  id="priceError"
+                  class="text-danger"
+                  style="display: none"
+                ></p>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label class="col-sm-4 col-form-label">Description</label>
+              <div class="col-sm-8">
+                <textarea
+                  class="form-control"
+                  id="desInput"
+                  th:field="${productRequest.description}"
+                ></textarea>
+                <p
+                  th:if="${#fields.hasErrors('description')}"
+                  th:errorclass="text-danger"
+                  th:errors="${productRequest.description}"
+                ></p>
+                <p id="desError" class="text-danger" style="display: none"></p>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label class="col-sm-4 col-form-label">Brand</label>
+              <div class="col-sm-8">
+                <input
+                  class="form-control"
+                  id="brandInput"
+                  th:field="${productRequest.brand}"
+                />
+                <p
+                  th:if="${#fields.hasErrors('brand')}"
+                  th:errorclass="text-danger"
+                  th:errors="${productRequest.brand}"
+                ></p>
+                <p
+                  id="brandError"
+                  class="text-danger"
+                  style="display: none"
+                ></p>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label class="col-sm-4 col-form-label">Thumbnail</label>
+              <div class="col-sm-8">
+                <img
+                  th:src="@{'/images/' + ${product.thumbnail}}"
+                  width="80"
+                  alt="Ảnh"
+                  class="img-thumbnail"
+                />
+                <input
+                  class="form-control"
+                  type="file"
+                  id="thumbnailFile"
+                  th:field="${productRequest.thumbnail}"
+                />
+                <p
+                  th:if="${#fields.hasErrors('thumbnail')}"
+                  th:errorclass="text-danger"
+                  th:errors="${productRequest.thumbnail}"
+                ></p>
+                <p
+                  id="thumbnailError"
+                  class="text-danger"
+                  style="display: none"
+                ></p>
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <label class="col-sm-4 col-form-label">Advanced features</label>
+              <div class="col-sm-8">
+                <div
+                  class="checkbox"
+                  style="display: inline-block; margin-right: 15px"
+                >
+                  <label>
+                    <input
+                      type="checkbox"
+                      th:field="${productRequest.features}"
+                      value="gps"
+                    />
+                    GPS
+                  </label>
+                </div>
+                <div
+                  class="checkbox"
+                  style="display: inline-block; margin-right: 15px"
+                >
+                  <label>
+                    <input
+                      type="checkbox"
+                      th:field="${productRequest.features}"
+                      value="nfc"
+                    />
+                    NFC
+                  </label>
+                </div>
+                <div
+                  class="checkbox"
+                  style="display: inline-block; margin-right: 15px"
+                >
+                  <label>
+                    <input
+                      type="checkbox"
+                      th:field="${productRequest.features}"
+                      value="waterproof"
+                    />
+                    Waterproof
+                  </label>
                 </div>
 
-                <div class="row mb-3">
-                    <label class="col-sm-4 col-form-label">Name</label>
-                    <div class="col-sm-8">
-                        <input class="form-control" id="nameInput" th:field="${productRequest.name}">
-                        <p th:if="${#fields.hasErrors('name')}" th:errorclass="text-danger" th:errors="${productRequest.name}"></p>
-                        <p id="nameError" class="text-danger" style="display:none;"></p>
-                    </div>
+                <p
+                  th:if="${#fields.hasErrors('features')}"
+                  th:errorclass="text-danger"
+                  th:errors="${productRequest.features}"
+                ></p>
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <label class="col-sm-4 col-form-label">Category</label>
+              <div class="col-sm-8">
+                <select
+                  class="form-select"
+                  th:field="${productRequest.category}"
+                >
+                  <option value="Computer" selected>Computer</option>
+                  <option value="Phone">Phone</option>
+                  <option value="Ipad">Ipad</option>
+                </select>
+                <p
+                  th:if="${#fields.hasErrors('category')}"
+                  th:errorclass="text-danger"
+                  th:errors="${productRequest.category}"
+                ></p>
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <label class="col-sm-4 col-form-label">Color</label>
+              <div class="col-sm-8">
+                <div class="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    id="black"
+                    name="color"
+                    value="black"
+                    class="form-check-input"
+                    th:field="${productRequest.color}"
+                  />
+                  <label for="black" class="form-check-label">black</label>
                 </div>
-
-                <div class="row mb-3">
-                    <label class="col-sm-4 col-form-label">Price</label>
-                    <div class="col-sm-8">
-                        <input class="form-control" id="priceInput" th:field="${productRequest.price}">
-                        <p th:if="${#fields.hasErrors('price')}" th:errorclass="text-danger" th:errors="${productRequest.price}"></p>
-                        <p id="priceError" class="text-danger" style="display:none;"></p>
-                    </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    id="white"
+                    name="color"
+                    value="white"
+                    class="form-check-input"
+                    th:field="${productRequest.color}"
+                  />
+                  <label for="white" class="form-check-label">white</label>
                 </div>
-
-                <div class="row mb-3">
-                    <label class="col-sm-4 col-form-label">Description</label>
-                    <div class="col-sm-8">
-                        <textarea class="form-control" id="desInput" th:field="${productRequest.description}"></textarea>
-                        <p th:if="${#fields.hasErrors('description')}" th:errorclass="text-danger" th:errors="${productRequest.description}"></p>
-                        <p id="desError" class="text-danger" style="display:none;"></p>
-                    </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    type="radio"
+                    id="silver"
+                    name="color"
+                    value="silver"
+                    class="form-check-input"
+                    th:field="${productRequest.color}"
+                  />
+                  <label for="silver" class="form-check-label">silver</label>
                 </div>
+                <p
+                  th:if="${#fields.hasErrors('color')}"
+                  th:errorclass="text-danger"
+                  th:errors="${productRequest.color}"
+                ></p>
+                <p
+                  id="colorError"
+                  class="text-danger"
+                  style="display: none"
+                ></p>
+              </div>
+            </div>
 
-                <div class="row mb-3">
-                    <label class="col-sm-4 col-form-label">Brand</label>
-                    <div class="col-sm-8">
-                        <input class="form-control" id="brandInput" th:field="${productRequest.brand}">
-                        <p th:if="${#fields.hasErrors('brand')}" th:errorclass="text-danger" th:errors="${productRequest.brand}"></p>
-                        <p id="brandError" class="text-danger" style="display:none;"></p>
-                    </div>
+            <div class="row mb-3">
+              <label class="col-sm-4 col-form-label">Detail Images</label>
+              <div class="col-sm-8">
+
+                <div class="d-flex flex-wrap" id="imageDetailsPreview">
+                  <div
+                          th:each="productImage : ${product.productImages}"
+                          class="me-2 mb-2 position-relative"
+                  >
+                    <img
+                            th:src="@{'/images/' + ${productImage.imageFile}}"
+                            class="img-thumbnail"
+                            width="200"
+                            alt="Detail Image"
+                    />
+                    <button type="button" id="btnRemove" class="btn position-absolute top-0 end-0" th:attr="image-index=${productImage.id}">
+                      <i class="bi bi-x-circle-fill text-info"></i>
+                    </button>
+                  </div>
                 </div>
-
-
-                <div class="row mb-3">
-                    <label class="col-sm-4 col-form-label">Thumbnail</label>
-                    <div class="col-sm-8">
-                        <img th:src="@{'/images/' + ${product.thumbnail}}" width="80" alt="Ảnh" class="img-thumbnail">
-                        <input class="form-control" type="file" id="thumbnailFile" th:field="${productRequest.thumbnail}">
-                        <p th:if="${#fields.hasErrors('thumbnail')}" th:errorclass="text-danger" th:errors="${productRequest.thumbnail}"></p>
-                        <p id="thumbnailError" class="text-danger" style="display:none;"></p>
-                    </div>
+                <input
+                        class="form-control"
+                        type="file"
+                        id="imageFiles"
+                        th:field="${productRequest.imageFiles}"
+                        multiple
+                        style="display: none"
+                />
+                <div class="d-grid">
+                  <button
+                          id="btnUpload"
+                          type="button"
+                          class="btn btn-outline-secondary"
+                  >
+                    <i class="bi bi-arrow-bar-up"></i>
+                    <span>Upload File</span>
+                  </button>
                 </div>
+                <p
+                        id="imageFilesError"
+                        class="text-danger"
+                        style="display: none"
+                ></p>
 
-                <div class="row mb-4">
-                    <label class="col-sm-4 col-form-label">Advanced features</label>
-                    <div class="col-sm-8">
-                        <div class="checkbox" style="display: inline-block; margin-right: 15px;">
-                            <label>
-                                <input type="checkbox" th:field="${productRequest.features}" value="gps"> GPS
-                            </label>
-                        </div>
-                        <div class="checkbox" style="display: inline-block; margin-right: 15px;">
-                            <label>
-                                <input type="checkbox" th:field="${productRequest.features}" value="nfc"> NFC
-                            </label>
-                        </div>
-                        <div class="checkbox" style="display: inline-block; margin-right: 15px;">
-                            <label>
-                                <input type="checkbox" th:field="${productRequest.features}" value="waterproof"> Waterproof
-                            </label>
-                        </div>
+              </div>
+            </div>
 
-                        <p th:if="${#fields.hasErrors('features')}" th:errorclass="text-danger" th:errors="${productRequest.features}"></p>
-                    </div>
-                </div>
-
-                <div class="row mb-4">
-                    <label class="col-sm-4 col-form-label">Category</label>
-                    <div class="col-sm-8">
-                        <select class="form-select" th:field="${productRequest.category}">
-                            <option value="Computer" selected>Computer</option>
-                            <option value="Phone">Phone</option>
-                            <option value="Ipad">Ipad</option>
-                        </select>
-                        <p th:if="${#fields.hasErrors('category')}" th:errorclass="text-danger" th:errors="${productRequest.category}"></p>
-                    </div>
-                </div>
-
-                <div class="row mb-4">
-                    <label class="col-sm-4 col-form-label">Color</label>
-                    <div class="col-sm-8">
-                        <div class="form-check form-check-inline">
-                            <input type="radio" id="black" name="color" value="black" class="form-check-input" th:field="${productRequest.color}">
-                            <label for="black" class="form-check-label">black</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input type="radio" id="white" name="color" value="white" class="form-check-input" th:field="${productRequest.color}">
-                            <label for="white" class="form-check-label">white</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input type="radio" id="silver" name="color" value="silver" class="form-check-input" th:field="${productRequest.color}">
-                            <label for="silver" class="form-check-label">silver</label>
-                        </div>
-                        <p th:if="${#fields.hasErrors('color')}" th:errorclass="text-danger" th:errors="${productRequest.color}"></p>
-                        <p id="colorError" class="text-danger" style="display:none;"></p>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <label class="col-sm-4 col-form-label">Detail Images</label>
-                    <div class="col-sm-8">
-
-                        <div class="d-flex flex-wrap">
-                            <div th:each="imageFile : ${product.imageFiles}" class="me-2 mb-2">
-                                <img th:src="@{'/images/' + ${imageFile}}" class="img-thumbnail" width="80" alt="Detail Image">
-                            </div>
-                        </div>
-
-                        <input class="form-control" type="file" id="imageFiles" th:field="${productRequest.imageFiles}" multiple>
-                        <p th:if="${#fields.hasErrors('imageFiles')}" th:errors="${productRequest.imageFiles}" class="text-danger"></p>
-                        <p id="imageFilesError" class="text-danger" style="display:none;"></p>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="offset-sm-4 col-sm-4 d-grid">
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </div>
-                    <div class="col-sm-4 d-grid">
-                        <a class="btn btn-outline-primary" href="/products" role="button">Cancel</a>
-                    </div>
-                </div>
-            </form>
+            <div class="row">
+              <div class="offset-sm-4 col-sm-4 d-grid">
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+              <div class="col-sm-4 d-grid">
+                <a
+                  class="btn btn-outline-primary"
+                  href="/products"
+                  role="button"
+                  >Cancel</a
+                >
+              </div>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</body>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
