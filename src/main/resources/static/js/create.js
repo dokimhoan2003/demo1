@@ -21,8 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const maxSize = 10 * 1024 * 1024; // 10MB for file size
   const validFileTypes = ["image/jpeg", "image/png", "image/jpg"];
 
-    let selectedThumbnail;
-
+    let selectedThumbnail = [];
     const previewSelectedThumbnail = () => {
         const thumbnailPreview = document.getElementById("thumbnailPreview");
             thumbnailPreview.innerHTML = "";
@@ -33,33 +32,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 const thumbnailElement = document.createElement("div");
                 thumbnailElement.classList.add("me-2", "mb-2", "position-relative");
                 thumbnailElement.innerHTML = `<img src="${e.target.result}" alt="Image" class="img-thumbnail" width="100">
-                    <button type="button" id="btnRemoveThumbnail" class="btn position-absolute top-0 end-0" data-index="${index}"><i class="bi bi-x-circle-fill text-info"></i>
-
-        </button>`;
+                    `;
                 thumbnailPreview.appendChild(thumbnailElement);
 
-                thumbnailElement
-                  .querySelector("#btnRemoveThumbnail")
-                  .addEventListener("click", function () {
-                    const fileIndex = parseInt(this.getAttribute("data-index"));
-                    selectedThumbnail.splice(fileIndex, 1); // Xóa file khỏi mảng
-                    previewSelectedThumbnail(); // Cập nhật lại giao diện
-                  });
+//                thumbnailElement
+//                  .querySelector("#btnRemoveThumbnail")
+//                  .addEventListener("click", function () {
+//                    const fileIndex = parseInt(this.getAttribute("data-index"));
+//                    selectedThumbnail.splice(fileIndex, 1); // Xóa file khỏi mảng
+//                    previewSelectedThumbnail(); // Cập nhật lại giao diện
+//                  });
               };
               reader.readAsDataURL(file); // đọc file
             });
             const dataTransfer = new DataTransfer();
             selectedThumbnail.forEach((image) => dataTransfer.items.add(image));
             thumbnailFileInput.files[0] = dataTransfer.files[0]; // Cập nhật trường input
+            selectedThumbnail.length = 0;
     }
 
 
   // Immediate feedback for image file size on file change
   thumbnailFileInput.addEventListener("change", function (e) {
-    var thumbnail = e.target.files[0];
-
-    if (thumbnail) {
-      if (thumbnail.size > maxSize) {
+    var thumbnail = e.target.files;
+    selectedThumbnail.push(...thumbnail);
+    if (thumbnail[0]) {
+      if (thumbnail[0].size > maxSize) {
         isValid = false;
         thumbnailError.style.display = "block";
         thumbnailError.textContent = "File is too large! Maximum size is 10MB";

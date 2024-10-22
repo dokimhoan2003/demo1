@@ -116,12 +116,18 @@
             <div class="row mb-3">
               <label class="col-sm-4 col-form-label">Thumbnail</label>
               <div class="col-sm-8">
-                <img
-                  th:src="@{'/images/' + ${product.thumbnail}}"
-                  width="80"
-                  alt="Ảnh"
-                  class="img-thumbnail"
-                />
+                <div class="d-flex flex-wrap" id="thumbnailPreview">
+                  <div class="me-2 mb-2 position-relative thumbnail-container">
+                    <img
+                            th:src="@{'/images/' + ${product.thumbnail}}"
+                            width="100"
+                            alt="Ảnh"
+                            class="img-thumbnail"
+                    />
+                  </div>
+                </div>
+
+
                 <input
                   class="form-control"
                   type="file"

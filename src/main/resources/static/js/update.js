@@ -117,11 +117,33 @@ document.addEventListener("DOMContentLoaded", function () {
     return formData;
   }
 
+  let selectedThumbnail = [];
+  const previewSelectedThumbnail = () => {
+    const thumbnailPreview = document.getElementById("thumbnailPreview");
+                thumbnailPreview.innerHTML = "";
+                selectedThumbnail.forEach((file, index) => {
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    // Khi đọc file hoàn tất
+                    const thumbnailElement = document.createElement("div");
+                    thumbnailElement.classList.add("me-2", "mb-2", "position-relative");
+                    thumbnailElement.innerHTML = `<img src="${e.target.result}" alt="Image" class="img-thumbnail" width="100">`;
+                    thumbnailPreview.appendChild(thumbnailElement);
+                  };
+                  reader.readAsDataURL(file); // đọc file
+                });
+                const dataTransfer = new DataTransfer();
+                selectedThumbnail.forEach((image) => dataTransfer.items.add(image));
+                thumbnailFileInput.files[0] = dataTransfer.files[0]; // Cập nhật trường input
+                selectedThumbnail.length = 0;
+  }
+
   // Immediate feedback for image file size on file change
   thumbnailFileInput.addEventListener("change", function (e) {
-    var thumbnail = e.target.files[0];
-    if (thumbnail) {
-      if (thumbnail.size > maxSize) {
+    var thumbnail = e.target.files;
+    selectedThumbnail.push(...thumbnail);
+    if (thumbnail[0]) {
+      if (thumbnail[0].size > maxSize) {
         isValid = false;
         thumbnailError.style.display = "block";
         thumbnailError.textContent = "File is too large! Maximum size is 10MB";
@@ -129,6 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         thumbnailError.style.display = "none";
       }
+      previewSelectedThumbnail();
     }
   });
 
