@@ -1,8 +1,6 @@
 package com.example.demo1.controllers;
 
 import com.example.demo1.models.Product;
-import com.example.demo1.models.ProductImage;
-import com.example.demo1.request.ProductImageRequest;
 import com.example.demo1.request.ProductRequest;
 import com.example.demo1.response.MessageResponse;
 import com.example.demo1.services.ProductService;
@@ -13,14 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/products")
@@ -35,16 +30,6 @@ public class ProductController {
         return new ResponseEntity<>(productService.existsByName(name), HttpStatus.OK);
     }
 
-
-
-    @GetMapping("/{id}/confirm-delete")
-    @ResponseBody
-    public ResponseEntity<MessageResponse> confirmDelete(@PathVariable Long id) throws Exception {
-            productService.deleteProduct(id);
-            MessageResponse messageResponse = new MessageResponse();
-            messageResponse.setMessage("Delete Successfully");
-            return new ResponseEntity<>(messageResponse,HttpStatus.OK);
-    }
 
 
     @PostMapping("/search")
@@ -73,12 +58,6 @@ public class ProductController {
     @PostMapping("/create")
     public String createProduct(@Valid @ModelAttribute ProductRequest productRequest,
                                 BindingResult result, Model model) throws IOException {
-//        if(productRequest.getImageFile().isEmpty()) {
-//            result.addError(new FieldError("productRequest","imageFile","The image is required"));
-//        }
-//        if(productRequest.getImageFile().getSize() > 10*1024*1024) {
-//            result.addError(new FieldError("productRequest","imageFile","File is too large! Maximum size is 10MB"));
-//        }
 
         if (result.hasErrors()) {
             return "products/create";
@@ -113,22 +92,49 @@ public class ProductController {
 
     }
 
+//    @PostMapping("/update/{id}")
+//    public String updateProduct(Model model,
+//                                @PathVariable Long id,
+//                                @Valid @ModelAttribute ProductRequest productRequest,
+//                                BindingResult result) {
+//        try {
+//            Product product = productService.getProductById(id);
+//            model.addAttribute("product",product);
+//
+//            productService.updateProduct(id, productRequest);
+//            return "redirect:/products";
+//        }catch (Exception e) {
+//            System.out.println("Exception" + e.getMessage());
+//            return "products/update";
+//        }
+//    }
+
     @PostMapping("/update/{id}")
-    public String updateProduct(Model model,
-                                @PathVariable Long id,
-                                @Valid @ModelAttribute ProductRequest productRequest,
-                                BindingResult result) {
-        try {
-            Product product = productService.getProductById(id);
-            model.addAttribute("product",product);
+    @ResponseBody
+    public ResponseEntity<?> updateProduct(
+            @PathVariable Long id,
+            @ModelAttribute ProductRequest productRequest,
+            @RequestParam(value = "listImages", required = false) List<MultipartFile> listImages,
+            @RequestParam(value = "listDelete", required = false) String[] listDelete
+    ) throws Exception {
+        // Cập nhật danh sách ảnh vào ProductRequest
+        productRequest.setImageFiles(listImages);
+        productRequest.setListDelete(listDelete);
 
-            productService.updateProduct(id, productRequest);
-            return "redirect:/products";
-        }catch (Exception e) {
-            System.out.println("Exception" + e.getMessage());
-            return "products/update";
-        }
+        productService.updateProduct(id, productRequest);
 
+        MessageResponse messageResponse = new MessageResponse();
+        messageResponse.setMessage("Update successfully");
+        return new ResponseEntity<>(messageResponse,HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/confirm-delete")
+    @ResponseBody
+    public ResponseEntity<MessageResponse> confirmDelete(@PathVariable Long id) throws Exception {
+        productService.deleteProduct(id);
+        MessageResponse messageResponse = new MessageResponse();
+        messageResponse.setMessage("Delete Successfully");
+        return new ResponseEntity<>(messageResponse,HttpStatus.OK);
     }
 
 

@@ -21,9 +21,43 @@ document.addEventListener("DOMContentLoaded", function () {
   const maxSize = 10 * 1024 * 1024; // 10MB for file size
   const validFileTypes = ["image/jpeg", "image/png", "image/jpg"];
 
+    let selectedThumbnail;
+
+    const previewSelectedThumbnail = () => {
+        const thumbnailPreview = document.getElementById("thumbnailPreview");
+            thumbnailPreview.innerHTML = "";
+            selectedThumbnail.forEach((file, index) => {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                // Khi đọc file hoàn tất
+                const thumbnailElement = document.createElement("div");
+                thumbnailElement.classList.add("me-2", "mb-2", "position-relative");
+                thumbnailElement.innerHTML = `<img src="${e.target.result}" alt="Image" class="img-thumbnail" width="100">
+                    <button type="button" id="btnRemoveThumbnail" class="btn position-absolute top-0 end-0" data-index="${index}"><i class="bi bi-x-circle-fill text-info"></i>
+
+        </button>`;
+                thumbnailPreview.appendChild(thumbnailElement);
+
+                thumbnailElement
+                  .querySelector("#btnRemoveThumbnail")
+                  .addEventListener("click", function () {
+                    const fileIndex = parseInt(this.getAttribute("data-index"));
+                    selectedThumbnail.splice(fileIndex, 1); // Xóa file khỏi mảng
+                    previewSelectedThumbnail(); // Cập nhật lại giao diện
+                  });
+              };
+              reader.readAsDataURL(file); // đọc file
+            });
+            const dataTransfer = new DataTransfer();
+            selectedThumbnail.forEach((image) => dataTransfer.items.add(image));
+            thumbnailFileInput.files[0] = dataTransfer.files[0]; // Cập nhật trường input
+    }
+
+
   // Immediate feedback for image file size on file change
   thumbnailFileInput.addEventListener("change", function (e) {
     var thumbnail = e.target.files[0];
+
     if (thumbnail) {
       if (thumbnail.size > maxSize) {
         isValid = false;
@@ -33,6 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         thumbnailError.style.display = "none";
       }
+      previewSelectedThumbnail();
     }
   });
 
@@ -47,29 +82,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const newFiles = Array.from(files);
     selectedDetailImages.push(...newFiles);
 
-    if (files.length > 6) {
-      isValid = false;
-      imageFilesError.style.display = "block";
-      imageFilesError.textContent = "Number detail image must be <= 6";
-      e.target.value = "";
-      return;
-    } else {
-      for (var i = 0; i < files.length; i++) {
-        var file = files[i];
-        if (file.size > maxSize) {
-          isValid = false;
-          imageFilesError.style.display = "block";
-          imageFilesError.textContent = `File ${file.name} is too large! Maximum size is 10MB`;
-          e.target.value = "";
-
-          break;
-        } else {
-          imageFilesError.style.display = "none";
-
-        }
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      if (file.size > maxSize) {
+        isValid = false;
+        imageFilesError.style.display = "block";
+        imageFilesError.textContent = `File ${file.name} is too large! Maximum size is 10MB`;
+        e.target.value = "";
+        break;
+      } else {
+        imageFilesError.style.display = "none";
       }
-      previewSelectedImages();
     }
+    previewSelectedImages();
+
   });
   const previewSelectedImages = () => {
     const imageDetailsPreview = document.getElementById("imageDetailsPreview");
@@ -77,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
     selectedDetailImages.forEach((file, index) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-       // Khi đọc file hoàn tất
+        // Khi đọc file hoàn tất
         const imgDetailsElement = document.createElement("div");
         imgDetailsElement.classList.add("me-2", "mb-2", "position-relative");
         imgDetailsElement.innerHTML = `<img src="${e.target.result}" alt="Image" class="img-thumbnail" width="200">
@@ -85,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </button>`;
         imageDetailsPreview.appendChild(imgDetailsElement);
-        console.log(imageDetailsPreview)
+        console.log(imageDetailsPreview);
         // sự kiện delete image
         imgDetailsElement
           .querySelector("#btnRemove")
@@ -120,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       try {
         const response = await fetch(
-          `http://localhost:9898/products/check-name?name=${encodeURIComponent(
+          `http://192.84.103.230:9898/products/check-name?name=${encodeURIComponent(
             name
           )}`
         );

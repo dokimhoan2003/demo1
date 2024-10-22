@@ -4,7 +4,6 @@ import com.example.demo1.models.Product;
 import com.example.demo1.models.ProductImage;
 import com.example.demo1.repository.ProductImageRepository;
 import com.example.demo1.repository.ProductRepository;
-import com.example.demo1.request.ProductImageRequest;
 import com.example.demo1.request.ProductRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -18,7 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImp implements ProductService {
@@ -90,6 +88,7 @@ public class ProductServiceImp implements ProductService {
 
         // update thumbnail
         Product product = getProductById(id);
+
         String uploadDir = "public/images/";
         if(!productRequest.getThumbnail().isEmpty()) {
 
@@ -103,7 +102,6 @@ public class ProductServiceImp implements ProductService {
            MultipartFile thumbnail = productRequest.getThumbnail();
            Date createdAt = new Date();
            String storageFileName = createdAt.getTime() + "_" + thumbnail.getOriginalFilename();
-
            try (InputStream inputStream = thumbnail.getInputStream() ) {
                Files.copy(inputStream,Paths.get(uploadDir+storageFileName), StandardCopyOption.REPLACE_EXISTING);
            }
@@ -121,34 +119,39 @@ public class ProductServiceImp implements ProductService {
         product.setFeatures(productRequest.getFeatures());
 
         // Update product image
-        List<MultipartFile> validImageFiles = productRequest.getImageFiles();
-
-        if(!validImageFiles.isEmpty()) {
-            for(ProductImage productImage: product.getProductImages()) {
-                try {
-                    Files.delete(Paths.get(uploadDir + productImage.getImageFile()));
-                } catch (Exception e) {
-                    System.out.println("Exception: " + e.getMessage());
-                }
-            }
-
-            List<ProductImage> productImages = product.getProductImages();
-            for(MultipartFile imageFile : productRequest.getImageFiles()) {
-                if(!imageFile.isEmpty()) {
-                    String storageFileName = new Date().getTime() + "_" + imageFile.getOriginalFilename();
+        // Xử lý ảnh thêm mới
+        List<MultipartFile> imageFiles = productRequest.getImageFiles();
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            for (MultipartFile imageFile : imageFiles) {
+                if (!imageFile.isEmpty()) {
+                    String fileName = new Date().getTime() + "_" + imageFile.getOriginalFilename();
                     try (InputStream inputStream = imageFile.getInputStream()) {
-                        Files.copy(inputStream, Paths.get(uploadDir + storageFileName), StandardCopyOption.REPLACE_EXISTING);
+                        Files.copy(inputStream, Paths.get(uploadDir + fileName), StandardCopyOption.REPLACE_EXISTING);
                     }
-                    ProductImage newProductImage = new ProductImage();
-                    newProductImage.setImageFile(storageFileName);
-                    newProductImage.setProduct(product);
-                    productImages.add(newProductImage);
+                    // Thêm ảnh mới vào sản phẩm
+                    ProductImage newImage = new ProductImage();
+                    newImage.setImageFile(fileName);
+                    newImage.setProduct(product);
+                    product.getProductImages().add(newImage);
                 }
             }
-            product.setProductImages(productImages);
         }
 
-
+        // Xử lý ảnh cần xóa
+        String[] imagesToDelete = productRequest.getListDelete();
+        if (imagesToDelete != null) {
+            for (String fileName : imagesToDelete) {
+                // Xóa file khỏi server
+                Path filePath = Paths.get(uploadDir + fileName);
+                try {
+                    Files.delete(filePath);
+                } catch (Exception e) {
+                    System.out.println("Exception while deleting file: " + e.getMessage());
+                }
+                // Xóa ảnh khỏi database
+                productImageRepository.deleteProductImage(fileName, product.getId());
+            }
+        }
         return productRepository.save(product);
     }
 

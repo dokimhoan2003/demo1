@@ -267,7 +267,7 @@
                 <div class="d-flex flex-wrap" id="imageDetailsPreview">
                   <div
                           th:each="productImage : ${product.productImages}"
-                          class="me-2 mb-2 position-relative"
+                          class="me-2 mb-2 position-relative image-container"
                   >
                     <img
                             th:src="@{'/images/' + ${productImage.imageFile}}"
@@ -275,7 +275,7 @@
                             width="200"
                             alt="Detail Image"
                     />
-                    <button type="button" id="btnRemove" class="btn position-absolute top-0 end-0" th:attr="image-index=${productImage.id}">
+                    <button type="button" id="btnRemove" class="btn position-absolute top-0 end-0" th:attr="image-index=${productImage.imageFile}">
                       <i class="bi bi-x-circle-fill text-info"></i>
                     </button>
                   </div>
@@ -285,8 +285,8 @@
                         type="file"
                         id="imageFiles"
                         th:field="${productRequest.imageFiles}"
+                        style="display:none;"
                         multiple
-                        style="display: none"
                 />
                 <div class="d-grid">
                   <button
