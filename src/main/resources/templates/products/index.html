@@ -5,20 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>demo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+            rel="stylesheet"
+    />
+    <script th:src="@{/js/index.js}"></script>
 </head>
 <body>
-<div class="container">
-    <h2 class="text-center my-4">Danh sách sản phẩm</h2>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <a class="btn btn-primary" href="/products/create">Create Product</a>
-        <form method="post" action="/products/search" >
-            <label for="keyword">Tìm kiếm:</label>
-            <input type="text" id="keyword" name="keyword" th:value="${keyword}">
-            <input type="submit" value="Tìm">
+<nav class="navbar navbar-expand-sm bg-light">
+    <div class="container-fluid">
+        <form method="post" action="/products/search" id="searchForm" class="w-100" th:object="${searchRequest}">
+            <h6 class="mb-3 text-danger">Search by</h6>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="mb-3 row">
+                        <label for="priceSearch" class="col-sm-4 col-form-label">Name</label>
+                        <div class="col-sm-8">
+                            <input type="text" id="priceSearch" class="form-control" th:field="*{name}">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="create_at" class="col-sm-4 col-form-label">Create at</label>
+                        <div class="col-sm-8">
+                            <input type="date" id="create_at" class="form-control" th:field="*{createAt}">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="colorSearch" class="col-sm-4 col-form-label">Color</label>
+                        <div class="col-sm-8">
+                            <select id="colorSearch" class="form-select" th:field="*{color}">
+                                <option value="" selected>-- Select color --</option>
+                                <option value="black">Black</option>
+                                <option value="white">White</option>
+                                <option value="silver">Silver</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="mb-3 row">
+                        <label for="categorySearch" class="col-sm-4 col-form-label">Category</label>
+                        <div class="col-sm-8">
+                            <select id="categorySearch" class="form-select" th:field="*{category}">
+                                <option value="" selected >-- Select category --</option>
+                                <option value="computer">Computer</option>
+                                <option value="phone">Phone</option>
+                                <option value="ipad">Ipad</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-4 col-form-label">Features</label>
+                        <div class="mt-2 col-sm-8 d-flex flex-wrap">
+                            <div class="form-check mx-2">
+                                <input class="form-check-input" type="checkbox" id="chk_gps" th:field="*{features}" value="gps">
+                                <label class="form-check-label" for="chk_gps">GPS</label>
+                            </div>
+                            <div class="form-check mx-2">
+                                <input class="form-check-input" type="checkbox" id="chk_nfc" th:field="*{features}" value="nfc">
+                                <label class="form-check-label" for="chk_nfc">NFC</label>
+                            </div>
+                            <div class="form-check mx-2">
+                                <input class="form-check-input" type="checkbox" id="chk_waterproof" th:field="*{features}"  value="waterproof">
+                                <label class="form-check-label" for="chk_waterproof">Waterproof</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="me-4 d-flex justify-content-end">
+                        <a href="/products"><input class="btn btn-success me-3" type="button" value="Refresh"></a>
+                        <input class="btn btn-primary" type="submit" value="Search">
+                    </div>
+
+                </div>
+            </div>
         </form>
     </div>
+</nav>
 
-
+<div class="container mt-3">
+    <div style="display: flex; justify-content: flex-start; align-items: center;">
+        <a class="btn btn-primary" href="/products/create">Create Product</a>
+    </div>
 
     <table class="table">
         <thead>
@@ -54,12 +124,14 @@
             <td style="white-space:nowrap">
                 <a class="btn btn-primary btn-sm" th:href="@{/products/update/{id}(id=${product.id})}">Sửa</a>
                 <a class="btn btn-primary btn-sm btn-delete" th:attr="data-id=${product.id}" data-bs-toggle="modal" data-bs-target="#deleteModal">Xóa</a>
-<!--                <a class="btn btn-primary btn-sm" th:href="@{/products/delete/{id}(id=${product.id})}">Xóa</a>-->
             </td>
         </tr>
         </tbody>
     </table>
+
 </div>
+
+<!-- modal delete-->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -77,30 +149,7 @@
         </div>
     </div>
 </div>
-<script>
-    let productId;
-    document.querySelectorAll('.btn-delete').forEach(button => {
-            button.addEventListener('click', function () {
-                productId = parseInt(this.getAttribute('data-id'));
-                console.log(productId);
-            });
-        });
-    document.getElementById('btnConfirmDelete').addEventListener('click', async function () {
-        try {
-        const response = await fetch(`http://192.84.103.230:9898/products/${productId}/confirm-delete`);
-        if (!response.ok) throw new Error('Network response was not ok');
-        const result = await response.json();
-        if (result.message === 'Delete Successfully') {
-        location.reload();
-        } else {
-        alert('Xóa không thành công');
-        }
 
-        }catch(error) {
-        console.error('Error delete:', error);
-        }
-    });
-</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

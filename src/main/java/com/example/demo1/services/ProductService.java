@@ -4,6 +4,7 @@ package com.example.demo1.services;
 import com.example.demo1.models.Product;
 import com.example.demo1.models.ProductImage;
 import com.example.demo1.request.ProductRequest;
+import com.example.demo1.request.SearchRequest;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface ProductService {
 
     public Product getProductById(Long id) throws Exception;
 
-    public List<Product> searchProduct(String keyword);
+    public List<Product> searchProduct(SearchRequest searchRequest);
 
     public boolean existsByName(String name);
 

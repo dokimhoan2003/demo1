@@ -5,6 +5,7 @@ import com.example.demo1.models.ProductImage;
 import com.example.demo1.repository.ProductImageRepository;
 import com.example.demo1.repository.ProductRepository;
 import com.example.demo1.request.ProductRequest;
+import com.example.demo1.request.SearchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -40,12 +42,13 @@ public class ProductServiceImp implements ProductService {
         String thumbnailFileName = createdAt.getTime() + "_" + thumbnail.getOriginalFilename();
         String uploadDir = "public/images/";
 
+        // try with resource
         try {
             Path uploadPath = Paths.get(uploadDir);
             if(!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
-            try (InputStream inputStream = thumbnail.getInputStream() ) {
+            try (InputStream inputStream = thumbnail.getInputStream()) {
                 Files.copy(inputStream,Paths.get(uploadDir+thumbnailFileName), StandardCopyOption.REPLACE_EXISTING);
             }
         }catch (Exception e) {
@@ -158,6 +161,8 @@ public class ProductServiceImp implements ProductService {
     @Override
     public void deleteProduct(Long id) throws Exception {
         Product deleteProduct = getProductById(id);
+
+        // try with resource
         try {
             //delete thumbnail đc save trên server
             Path thumbnailPath = Paths.get("public/images/" + deleteProduct.getThumbnail());
@@ -193,8 +198,39 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public List<Product> searchProduct(String keyword) {
-        return productRepository.findByName(keyword);
+    public List<Product> searchProduct(SearchRequest searchRequest) {
+
+        String name = searchRequest.getName();
+        LocalDate createAt = searchRequest.getCreateAt();
+        String color = searchRequest.getColor();
+        String category = searchRequest.getCategory();
+        List<String> features = searchRequest.getFeatures();
+
+
+        StringBuilder featureConcatBuilder = new StringBuilder();
+        for(String feature : features) {
+            featureConcatBuilder.append(feature).append(",");
+        }
+        String featureConcat = featureConcatBuilder.toString();
+        if (featureConcat.endsWith(",")) {
+            featureConcat = featureConcat.substring(0, featureConcat.length() - 1);
+        }
+
+        if(name.isEmpty() && createAt == null && color.isEmpty() && category.isEmpty() && featureConcat.isEmpty()) {
+            return productRepository.findAll(Sort.by(Sort.Direction.DESC,"createdAt"));
+        } else if(createAt != null && name.isEmpty() && color.isEmpty() && category.isEmpty() && featureConcat.isEmpty()) {
+            return productRepository.searchDate(createAt);
+        } else if(!color.isEmpty() && createAt == null && category.isEmpty() && featureConcat.isEmpty()) {
+            return productRepository.searchColor(color);
+        }else if(!category.isEmpty() && createAt == null && color.isEmpty() && featureConcat.isEmpty()) {
+            return productRepository.searchCategory(category);
+        }else if(!featureConcat.isEmpty() && createAt == null && color.isEmpty() && category.isEmpty()) {
+            return productRepository.searchFeature(featureConcat);
+        }else {
+            return productRepository.search(name,createAt,color,category,featureConcat);
+        }
+
+
     }
 
     @Override

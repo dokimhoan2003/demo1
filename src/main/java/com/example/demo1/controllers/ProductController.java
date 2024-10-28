@@ -2,6 +2,7 @@ package com.example.demo1.controllers;
 
 import com.example.demo1.models.Product;
 import com.example.demo1.request.ProductRequest;
+import com.example.demo1.request.SearchRequest;
 import com.example.demo1.response.MessageResponse;
 import com.example.demo1.services.ProductService;
 import jakarta.validation.Valid;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -33,17 +35,18 @@ public class ProductController {
 
 
     @PostMapping("/search")
-    public String searchProducts(@RequestParam String keyword, Model model) {
-        List<Product> products = productService.searchProduct(keyword);
+    public String searchProducts(@ModelAttribute SearchRequest searchRequest, Model model) {
+        List<Product> products = productService.searchProduct(searchRequest);
         model.addAttribute("products", products);
-        model.addAttribute("keyword", keyword);
+        model.addAttribute("searchRequest",searchRequest);
         return "products/index";
     }
 
     @GetMapping()
-    public String getAllProducts(Model model) {
+    public String getAllProducts(@ModelAttribute SearchRequest searchRequest,Model model) {
         List<Product> products = productService.getAllProducts();
         model.addAttribute("products",products);
+        model.addAttribute("searchRequest",searchRequest);
         return "products/index";
     }
 
