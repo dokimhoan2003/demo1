@@ -1,6 +1,7 @@
 package com.example.demo1.controllers;
 
 import com.example.demo1.models.Product;
+import com.example.demo1.models.ProductFeature;
 import com.example.demo1.request.ProductRequest;
 import com.example.demo1.request.SearchRequest;
 import com.example.demo1.response.MessageResponse;
@@ -82,7 +83,13 @@ public class ProductController {
             productRequest.setBrand(product.getBrand());
             productRequest.setDescription(product.getDescription());
             productRequest.setCategory(product.getCategory());
-            productRequest.setFeatures(product.getFeatures());
+            List<String> features = new ArrayList<>();
+            List<ProductFeature> productFeatures = product.getFeatures();
+            for(ProductFeature productFeature : productFeatures) {
+                String feature = productFeature.getFeature();
+                features.add(feature);
+            }
+            productRequest.setFeatures(features);
             productRequest.setColor(product.getColor());
 
             model.addAttribute("productRequest",productRequest);
@@ -95,22 +102,6 @@ public class ProductController {
 
     }
 
-//    @PostMapping("/update/{id}")
-//    public String updateProduct(Model model,
-//                                @PathVariable Long id,
-//                                @Valid @ModelAttribute ProductRequest productRequest,
-//                                BindingResult result) {
-//        try {
-//            Product product = productService.getProductById(id);
-//            model.addAttribute("product",product);
-//
-//            productService.updateProduct(id, productRequest);
-//            return "redirect:/products";
-//        }catch (Exception e) {
-//            System.out.println("Exception" + e.getMessage());
-//            return "products/update";
-//        }
-//    }
 
     @PostMapping("/update/{id}")
     @ResponseBody

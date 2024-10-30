@@ -1,5 +1,6 @@
 package com.example.demo1.request;
 
+import com.example.demo1.models.ProductFeature;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,5 +35,5 @@ public class ProductRequest {
 //    @NotEmpty(message = "Please select value")
     private String color;
 
-    private String features;
+    private List<String> features;
 }

@@ -2,6 +2,7 @@ package com.example.demo1.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.Date;
 import java.util.List;
@@ -36,6 +37,7 @@ public class Product {
 
     private String color;
 
-    private String features;
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<ProductFeature> features;
 
 }

@@ -15,5 +15,7 @@ public class SearchRequest {
     private String color;
     private String category;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate createAt;
+    private LocalDate fromCreateAt;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate toCreateAt;
 }

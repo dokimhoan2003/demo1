@@ -1,6 +1,7 @@
 package com.example.demo1.services;
 
 import com.example.demo1.models.Product;
+import com.example.demo1.models.ProductFeature;
 import com.example.demo1.models.ProductImage;
 import com.example.demo1.repository.ProductImageRepository;
 import com.example.demo1.repository.ProductRepository;
@@ -63,7 +64,16 @@ public class ProductServiceImp implements ProductService {
         newProduct.setCreatedAt(new Date());
         newProduct.setCategory(productRequest.getCategory());
         newProduct.setColor(productRequest.getColor());
-        newProduct.setFeatures(productRequest.getFeatures());
+
+        List<String> features = productRequest.getFeatures();
+        List<ProductFeature> productFeatures = new ArrayList<>();
+        for(String feature : features) {
+            ProductFeature newProductFeature = new ProductFeature();
+            newProductFeature.setProduct(newProduct);
+            newProductFeature.setFeature(feature);
+            productFeatures.add(newProductFeature);
+        }
+        newProduct.setFeatures(productFeatures);
         newProduct.setThumbnail(thumbnailFileName);
 
         List<MultipartFile> imageFiles = productRequest.getImageFiles();
@@ -119,7 +129,18 @@ public class ProductServiceImp implements ProductService {
         product.setPrice(productRequest.getPrice());
         product.setDescription(productRequest.getDescription());
         product.setColor(productRequest.getColor());
-        product.setFeatures(productRequest.getFeatures());
+
+        List<String> features = productRequest.getFeatures();
+        List<ProductFeature> productFeaturesOld = product.getFeatures();
+        productFeaturesOld.clear();
+        for(String feature:features) {
+            ProductFeature newProductFeature = new ProductFeature();
+            newProductFeature.setFeature(feature);
+            newProductFeature.setProduct(product);
+            productFeaturesOld.add(newProductFeature);
+        }
+        product.setFeatures(productFeaturesOld);
+
 
         // Update product image
         // Xử lý ảnh thêm mới
@@ -201,36 +222,44 @@ public class ProductServiceImp implements ProductService {
     public List<Product> searchProduct(SearchRequest searchRequest) {
 
         String name = searchRequest.getName();
-        LocalDate createAt = searchRequest.getCreateAt();
+        LocalDate fromCreateAt = searchRequest.getFromCreateAt();
+        LocalDate toCreateAt = searchRequest.getToCreateAt();
         String color = searchRequest.getColor();
         String category = searchRequest.getCategory();
-        List<String> features = searchRequest.getFeatures();
+        List<String> features = new ArrayList<>();
+        features.addAll(searchRequest.getFeatures());
 
+//        StringBuilder featureConcatBuilder = new StringBuilder();
+//        for(String feature : features) {
+//            featureConcatBuilder.append(feature).append(",");
+//        }
+//        String featureConcat = featureConcatBuilder.toString();
+//
+//
+//        if (featureConcat.endsWith(",")) {
+//            featureConcat = featureConcat.substring(0, featureConcat.length() - 1);
+//        }
 
-        StringBuilder featureConcatBuilder = new StringBuilder();
-        for(String feature : features) {
-            featureConcatBuilder.append(feature).append(",");
-        }
-        String featureConcat = featureConcatBuilder.toString();
-        if (featureConcat.endsWith(",")) {
-            featureConcat = featureConcat.substring(0, featureConcat.length() - 1);
-        }
-
-        if(name.isEmpty() && createAt == null && color.isEmpty() && category.isEmpty() && featureConcat.isEmpty()) {
+//        if(name.isEmpty() && fromCreateAt == null && toCreateAt == null && color.isEmpty() && category.isEmpty() && features.isEmpty()) {
+////            return productRepository.findAll(Sort.by(Sort.Direction.DESC,"createdAt"));
+////        } else if(fromCreateAt != null && toCreateAt != null && name.isEmpty() && color.isEmpty() && category.isEmpty() && features.isEmpty()) {
+////            return productRepository.searchDate(fromCreateAt,toCreateAt);
+////        } else if(!color.isEmpty() && fromCreateAt == null && toCreateAt == null && category.isEmpty() && features.isEmpty()) {
+////            return productRepository.searchColor(color);
+////        }else if(!category.isEmpty() && fromCreateAt == null && toCreateAt == null && color.isEmpty() && features.isEmpty()) {
+////            return productRepository.searchCategory(category);
+////        }else if(!features.isEmpty() && fromCreateAt == null && toCreateAt == null && color.isEmpty() && category.isEmpty()) {
+////            return productRepository.searchFeature(features, features.size());
+////        }else {
+////            return productRepository.search(name,fromCreateAt,toCreateAt,color,category,features,features.size());
+////        }
+        if(name.isEmpty() && fromCreateAt == null && toCreateAt == null && color.isEmpty() && category.isEmpty() && features.isEmpty()) {
             return productRepository.findAll(Sort.by(Sort.Direction.DESC,"createdAt"));
-        } else if(createAt != null && name.isEmpty() && color.isEmpty() && category.isEmpty() && featureConcat.isEmpty()) {
-            return productRepository.searchDate(createAt);
-        } else if(!color.isEmpty() && createAt == null && category.isEmpty() && featureConcat.isEmpty()) {
-            return productRepository.searchColor(color);
-        }else if(!category.isEmpty() && createAt == null && color.isEmpty() && featureConcat.isEmpty()) {
-            return productRepository.searchCategory(category);
-        }else if(!featureConcat.isEmpty() && createAt == null && color.isEmpty() && category.isEmpty()) {
-            return productRepository.searchFeature(featureConcat);
-        }else {
-            return productRepository.search(name,createAt,color,category,featureConcat);
+        }else if(features.isEmpty()) {
+            return productRepository.searchWithoutFeature(name,fromCreateAt,toCreateAt,color,category);
+        } else {
+            return productRepository.search(name,fromCreateAt,toCreateAt,color,category,features,features.size());
         }
-
-
     }
 
     @Override
