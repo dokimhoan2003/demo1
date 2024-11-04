@@ -5,11 +5,14 @@ import com.example.demo1.models.Product;
 import com.example.demo1.models.ProductImage;
 import com.example.demo1.request.ProductRequest;
 import com.example.demo1.request.SearchRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ProductService {
-    public List<Product> getAllProducts();
+    public Page<Product> getAllProducts(int pageNumber);
 
     public Product createProduct(ProductRequest productRequest);
 
@@ -19,7 +22,20 @@ public interface ProductService {
 
     public Product getProductById(Long id) throws Exception;
 
-    public List<Product> searchProduct(SearchRequest searchRequest);
+    public List<Product> searchProduct(String name,
+                                       String color,
+                                       String category,
+                                       List<String> features,
+                                       LocalDate fromCreateAt,
+                                       LocalDate toCreateAt);
+
+    public Page<Product> searchProduct(String name,
+                                       String color,
+                                       String category,
+                                       List<String> features,
+                                       LocalDate fromCreateAt,
+                                       LocalDate toCreateAt,
+                                       int pageNumber);
 
     public boolean existsByName(String name);
 

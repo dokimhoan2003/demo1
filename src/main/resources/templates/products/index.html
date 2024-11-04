@@ -12,16 +12,18 @@
     <script th:src="@{/js/index.js}"></script>
 </head>
 <body>
+
+<!--Search by-->
 <nav class="navbar navbar-expand-sm bg-light">
     <div class="container-fluid">
-        <form method="post" action="/products/search" id="searchForm" class="w-100" th:object="${searchRequest}">
+        <form method="get" action="/products/search" id="searchForm" class="w-100">
             <h6 class="mb-3 text-danger">Search by</h6>
             <div class="row">
                 <div class="col-sm-6">
                     <div class="mb-3 row">
                         <label for="priceSearch" class="col-sm-4 col-form-label">Name</label>
                         <div class="col-sm-8">
-                            <input type="text" id="priceSearch" class="form-control" th:field="*{name}">
+                            <input type="text" id="priceSearch" class="form-control" name="name" th:value="${param.name}">
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -30,25 +32,50 @@
                         </div>
                         <div class="col-sm-8 d-flex flex-wrap">
                             <div class="me-4">
-                                <input type="date" id="create_at_from" class="form-control" th:field="*{fromCreateAt}">
+                                <input type="date" id="create_at_from" class="form-control"
+                                       name="fromCreateAt"
+                                       th:value="${param.fromCreateAt != null ?param.fromCreateAt:''}"
+                                >
                             </div>
                             <div class="me-4">
                                 <i class="bi bi-arrow-right"></i>
                             </div>
                             <div>
-                                <input type="date" id="create_at_to" class="form-control" th:field="*{toCreateAt}">
+                                <input type="date" id="create_at_to" class="form-control"
+                                       name="toCreateAt"
+                                       th:value="${param.toCreateAt != null ?param.toCreateAt:''}"
+                                >
                             </div>
                         </div>
+<!--                        <div class="col-sm-8 d-flex flex-wrap">-->
+<!--                            <div class="me-4">-->
+<!--                                <input type="date" id="create_at_from" class="form-control"-->
+<!--                                       name="fromCreateAt"-->
+<!--                                       th:value="${param.fromCreateAt != null ?param.fromCreateAt:''}"-->
+<!--                                >-->
+<!--                            </div>-->
+<!--                            <div class="me-4">-->
+<!--                                <i class="bi bi-arrow-right"></i>-->
+<!--                            </div>-->
+<!--                            <div>-->
+<!--                                <input type="text" id="create_at_to" class="form-control" placeholder="yyyy-MM-dd"-->
+<!--                                       name="toCreateAt"-->
+<!--                                       th:value="${param.toCreateAt != null ? #temporals.format(param.toCreateAt, 'yyyy-MM-dd') : ''}"-->
+<!--                                       onfocus="formatDateInput(this)"-->
+<!--                                       onblur="unformatDateInput(this)"-->
+<!--                                >-->
+<!--                            </div>-->
+<!--                        </div>-->
 
                     </div>
                     <div class="mb-3 row">
                         <label for="colorSearch" class="col-sm-4 col-form-label">Color</label>
                         <div class="col-sm-8">
-                            <select id="colorSearch" class="form-select" th:field="*{color}">
-                                <option value="" selected>-- Select color --</option>
-                                <option value="black">Black</option>
-                                <option value="white">White</option>
-                                <option value="silver">Silver</option>
+                            <select id="colorSearch" class="form-select" name="color" th:value="${param.color}">
+                                <option value="" th:selected="${color == ''}" selected>-- Select color --</option>
+                                <option value="black" th:selected="${color == 'black'}">Black</option>
+                                <option value="white" th:selected="${color == 'white'}">White</option>
+                                <option value="silver" th:selected="${color == 'silver'}">Silver</option>
                             </select>
                         </div>
                     </div>
@@ -59,11 +86,11 @@
                     <div class="mb-3 row">
                         <label for="categorySearch" class="col-sm-4 col-form-label">Category</label>
                         <div class="col-sm-8">
-                            <select id="categorySearch" class="form-select" th:field="*{category}">
-                                <option value="" selected >-- Select category --</option>
-                                <option value="computer">Computer</option>
-                                <option value="phone">Phone</option>
-                                <option value="ipad">Ipad</option>
+                            <select id="categorySearch" class="form-select" name="category" th:value="${param.category}">
+                                <option value="" th:selected="${category == ''}" selected >-- Select category --</option>
+                                <option value="computer" th:selected="${category == 'computer'}">Computer</option>
+                                <option value="phone" th:selected="${category == 'phone'}">Phone</option>
+                                <option value="ipad" th:selected="${category == 'ipad'}">Ipad</option>
                             </select>
                         </div>
                     </div>
@@ -71,15 +98,27 @@
                         <label class="col-sm-4 col-form-label">Features</label>
                         <div class="mt-2 col-sm-8 d-flex flex-wrap">
                             <div class="form-check mx-2">
-                                <input class="form-check-input" type="checkbox" id="chk_gps" th:field="*{features}" value="gps">
+                                <input class="form-check-input" type="checkbox" id="chk_gps"
+                                       name="features"
+                                       value="gps"
+                                       th:checked="${param.features != null && param.features.contains('gps')}"
+                                >
                                 <label class="form-check-label" for="chk_gps">GPS</label>
                             </div>
                             <div class="form-check mx-2">
-                                <input class="form-check-input" type="checkbox" id="chk_nfc" th:field="*{features}" value="nfc">
+                                <input class="form-check-input"  type="checkbox" id="chk_nfc"
+                                       name="features"
+                                       value="nfc"
+                                       th:checked="${param.features != null && param.features.contains('nfc')}"
+                                >
                                 <label class="form-check-label" for="chk_nfc">NFC</label>
                             </div>
                             <div class="form-check mx-2">
-                                <input class="form-check-input" type="checkbox" id="chk_waterproof" th:field="*{features}"  value="waterproof">
+                                <input class="form-check-input" type="checkbox" id="chk_waterproof"
+                                       name="features"
+                                       value="waterproof"
+                                       th:checked="${param.features != null && param.features.contains('waterproof')}"
+                                >
                                 <label class="form-check-label" for="chk_waterproof">Waterproof</label>
                             </div>
                         </div>
@@ -96,6 +135,7 @@
     </div>
 </nav>
 
+<!--Table-->
 <div class="container mt-3">
     <div style="display: flex; justify-content: flex-start; align-items: center;">
         <a class="btn btn-primary" href="/products/create">Create Product</a>
@@ -135,7 +175,7 @@
             <td>
                 <img th:src="@{'/images/' +${product.thumbnail} }" width="90" class="img-thumbnail">
             </td>
-            <td th:text="${#dates.format(product.createdAt,'MM/dd/yyyy')}"></td>
+            <td th:text="${#dates.format(product.createdAt,'yyyy/MM/dd')}"></td>
 
             <td style="white-space:nowrap">
                 <a class="btn btn-primary btn-sm" th:href="@{/products/update/{id}(id=${product.id})}">Sửa</a>
@@ -143,9 +183,55 @@
             </td>
         </tr>
         </tbody>
-
-
     </table>
+
+    <!-- Pagination -->
+    <ul class="pagination d-flex justify-content-center" th:if="${!products.empty}"
+        th:with="searchUrl=${
+    (name == null || name == '') &&
+    (color == null || color == '') &&
+    (category == null || category == '') &&
+    (features == null || features.isEmpty()) &&
+    fromCreateAt == null &&
+    toCreateAt == null
+        ? '/products?page='
+        : '/products/search?'
+          + (name != null && name != '' ? 'name=' + name + '&' : '')
+          + (color != null && color != '' ? 'color=' + color + '&' : '')
+          + (category != null && category != '' ? 'category=' + category + '&' : '')
+          + (features != null && !features.isEmpty() ? 'features=' + #strings.listJoin(features, ',') + '&' : '')
+          + (fromCreateAt != null ? 'fromCreateAt=' + #temporals.format(fromCreateAt, 'yyyy-MM-dd') + '&' : '')
+          + (toCreateAt != null ? 'toCreateAt=' + #temporals.format(toCreateAt, 'yyyy-MM-dd') + '&' : '')
+          + 'page='
+}">
+
+        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{${searchUrl} + ${currentPage - 1}}"
+               th:if="${currentPage > 1}"
+            >
+                Previous
+            </a>
+            <span class="page-link" th:if="${currentPage == 1}">Previous</span>
+        </li>
+
+        <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+            th:classappend="${currentPage == i} ? 'active'"
+            class="page-item"
+        >
+            <a class="page-link" th:href="@{${searchUrl} + ${i}}" th:text="${i}"></a>
+        </li>
+
+        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{${searchUrl} + ${currentPage + 1}}"
+               th:if="${currentPage < totalPages}">
+                Next
+            </a>
+            <span class="page-link" th:if="${currentPage == totalPages}">Next</span>
+        </li>
+    </ul>
+
 
 
 </div>

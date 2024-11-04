@@ -6,8 +6,13 @@ import com.example.demo1.request.ProductRequest;
 import com.example.demo1.request.SearchRequest;
 import com.example.demo1.response.MessageResponse;
 import com.example.demo1.services.ProductService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,15 +22,23 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 @RequestMapping("/products")
+@SessionAttributes("searchRequest")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    // Tạo searchRequest mới khi session bắt đầu
+    @ModelAttribute("searchRequest")
+    public SearchRequest setUpSearchRequest() {
+        return new SearchRequest();
+    }
 
     @GetMapping("/check-name")
     @ResponseBody
@@ -33,21 +46,71 @@ public class ProductController {
         return new ResponseEntity<>(productService.existsByName(name), HttpStatus.OK);
     }
 
+    @GetMapping("/search")
+    public String searchProducts(@RequestParam(name = "name",required = false, defaultValue = "") String name,
+                                 @RequestParam(name = "color",required = false, defaultValue = "") String color,
+                                 @RequestParam(name = "category",required = false, defaultValue = "") String category,
+                                 @RequestParam(name = "features",required = false) List<String> features,
+                                 @RequestParam(name = "fromCreateAt",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromCreateAt,
+                                 @RequestParam(name = "toCreateAt",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toCreateAt,
+                                 @RequestParam(defaultValue = "1") int page,
+                                 Model model) {
+
+        Page<Product> products = productService.searchProduct(name, color, category, features, fromCreateAt, toCreateAt, page);
 
 
-    @PostMapping("/search")
-    public String searchProducts(@ModelAttribute SearchRequest searchRequest, Model model) {
-        List<Product> products = productService.searchProduct(searchRequest);
+
+
+        model.addAttribute("name",name);
+        model.addAttribute("color",color);
+        model.addAttribute("category",category);
+        model.addAttribute("features",features);
+        model.addAttribute("fromCreateAt",fromCreateAt);
+        model.addAttribute("toCreateAt",toCreateAt);
+
         model.addAttribute("products", products);
-        model.addAttribute("searchRequest",searchRequest);
+        model.addAttribute("totalPages",products.getTotalPages());
+        model.addAttribute("currentPage",page);
         return "products/index";
     }
 
+
     @GetMapping()
-    public String getAllProducts(@ModelAttribute SearchRequest searchRequest,Model model) {
-        List<Product> products = productService.getAllProducts();
-        model.addAttribute("products",products);
-        model.addAttribute("searchRequest",searchRequest);
+    public String getAllProducts(@RequestParam(name = "name", required = false, defaultValue = "") String name,
+                                 @RequestParam(name = "color", required = false, defaultValue = "") String color,
+                                 @RequestParam(name = "category", required = false, defaultValue = "") String category,
+                                 @RequestParam(name = "features", required = false) List<String> features,
+                                 @RequestParam(name = "fromCreateAt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromCreateAt,
+                                 @RequestParam(name = "toCreateAt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toCreateAt,
+                                 @RequestParam(defaultValue = "1") int page,
+                                 Model model) {
+
+        Page<Product> products = productService.getAllProducts(page);
+
+//        boolean hasSearchCriteria = !name.isEmpty() ||
+//                !color.isEmpty() ||
+//                !category.isEmpty() ||
+//                (features != null && !features.isEmpty()) ||
+//                fromCreateAt != null ||
+//                toCreateAt != null;
+//
+//        if (hasSearchCriteria) {
+//            products = productService.searchProduct(name, color, category, features, fromCreateAt, toCreateAt, page);
+//        } else {
+//            products = productService.getAllProducts(page);
+//        }
+
+        model.addAttribute("name", name);
+        model.addAttribute("color", color);
+        model.addAttribute("category", category);
+        model.addAttribute("features", features);
+        model.addAttribute("fromCreateAt", fromCreateAt);
+        model.addAttribute("toCreateAt", toCreateAt);
+
+        model.addAttribute("products", products);
+        model.addAttribute("totalPages", products.getTotalPages());
+        model.addAttribute("currentPage", page);
+
         return "products/index";
     }
 

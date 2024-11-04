@@ -1,6 +1,8 @@
 package com.example.demo1.repository;
 
 import com.example.demo1.models.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +12,10 @@ import java.util.Date;
 import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
+
+    //Pageable
+    @Query("SELECT p FROM Product p")
+    Page<Product> findAll(Pageable pageable);
 
     //search all field
     @Query("SELECT p FROM Product p " +
@@ -45,26 +51,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("toCreateAt") LocalDate toCreateAt,
             @Param("color") String color,
             @Param("category") String category);
-
-
-
-//     //search date
-//    @Query("SELECT p FROM Product p WHERE DATE(p.createdAt) >= :fromCreateAt AND DATE(p.createdAt) <= :toCreateAt")
-//    List<Product> searchDate(@Param("fromCreateAt") LocalDate fromCreateAt,@Param("toCreateAt") LocalDate toCreateAt);
-//
-//    // search color
-//    @Query("SELECT p FROM Product p WHERE p.color = :color")
-//    List<Product> searchColor(@Param("color") String color);
-//
-//    // search category
-//    @Query("SELECT p FROM Product p WHERE p.category = :category")
-//    List<Product> searchCategory(@Param("category") String category);
-//
-//    // search feature
-//    @Query("SELECT p FROM Product p JOIN p.features f WHERE f.feature IN :features " +
-//            "GROUP BY p.id HAVING COUNT(f) >= :featureCount")
-//    List<Product> searchFeature(@Param("features") List<String> features, @Param("featureCount") int featureCount);
-
 
     boolean existsByName(String name);
 }

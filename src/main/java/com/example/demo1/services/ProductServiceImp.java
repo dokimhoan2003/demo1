@@ -8,7 +8,7 @@ import com.example.demo1.repository.ProductRepository;
 import com.example.demo1.request.ProductRequest;
 import com.example.demo1.request.SearchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,9 +31,12 @@ public class ProductServiceImp implements ProductService {
     private ProductImageRepository productImageRepository;
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll(Sort.by(Sort.Direction.DESC,"createdAt"));
+    public Page<Product> getAllProducts(int pageNumber) {
+//        return productRepository.findAll(Sort.by(Sort.Direction.DESC,"createdAt"));
+        Pageable pageRequest = PageRequest.of(pageNumber-1,5, Sort.by("createdAt").descending());
+        return productRepository.findAll(pageRequest);
     }
+
 
     @Override
     public Product createProduct(ProductRequest productRequest) {
@@ -219,48 +222,29 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public List<Product> searchProduct(SearchRequest searchRequest) {
+    public List<Product> searchProduct(String name, String color, String category, List<String> features, LocalDate fromCreateAt, LocalDate toCreateAt) {
 
-        String name = searchRequest.getName();
-        LocalDate fromCreateAt = searchRequest.getFromCreateAt();
-        LocalDate toCreateAt = searchRequest.getToCreateAt();
-        String color = searchRequest.getColor();
-        String category = searchRequest.getCategory();
-        List<String> features = new ArrayList<>();
-        features.addAll(searchRequest.getFeatures());
-
-//        StringBuilder featureConcatBuilder = new StringBuilder();
-//        for(String feature : features) {
-//            featureConcatBuilder.append(feature).append(",");
-//        }
-//        String featureConcat = featureConcatBuilder.toString();
-//
-//
-//        if (featureConcat.endsWith(",")) {
-//            featureConcat = featureConcat.substring(0, featureConcat.length() - 1);
-//        }
-
-//        if(name.isEmpty() && fromCreateAt == null && toCreateAt == null && color.isEmpty() && category.isEmpty() && features.isEmpty()) {
-////            return productRepository.findAll(Sort.by(Sort.Direction.DESC,"createdAt"));
-////        } else if(fromCreateAt != null && toCreateAt != null && name.isEmpty() && color.isEmpty() && category.isEmpty() && features.isEmpty()) {
-////            return productRepository.searchDate(fromCreateAt,toCreateAt);
-////        } else if(!color.isEmpty() && fromCreateAt == null && toCreateAt == null && category.isEmpty() && features.isEmpty()) {
-////            return productRepository.searchColor(color);
-////        }else if(!category.isEmpty() && fromCreateAt == null && toCreateAt == null && color.isEmpty() && features.isEmpty()) {
-////            return productRepository.searchCategory(category);
-////        }else if(!features.isEmpty() && fromCreateAt == null && toCreateAt == null && color.isEmpty() && category.isEmpty()) {
-////            return productRepository.searchFeature(features, features.size());
-////        }else {
-////            return productRepository.search(name,fromCreateAt,toCreateAt,color,category,features,features.size());
-////        }
-        if(name.isEmpty() && fromCreateAt == null && toCreateAt == null && color.isEmpty() && category.isEmpty() && features.isEmpty()) {
+        if(name.isEmpty() && fromCreateAt == null && toCreateAt == null && color.isEmpty() && category.isEmpty() && features == null) {
             return productRepository.findAll(Sort.by(Sort.Direction.DESC,"createdAt"));
-        }else if(features.isEmpty()) {
+        }else if(features == null) {
             return productRepository.searchWithoutFeature(name,fromCreateAt,toCreateAt,color,category);
         } else {
             return productRepository.search(name,fromCreateAt,toCreateAt,color,category,features,features.size());
         }
     }
+    @Override
+    public Page<Product> searchProduct(String name, String color, String category, List<String> features, LocalDate fromCreateAt, LocalDate toCreateAt, int pageNumber) {
+
+        List<Product> products = this.searchProduct(name,color,category,features,fromCreateAt,toCreateAt);
+        Pageable pageable = PageRequest.of(pageNumber-1,5);
+        int start = (int) pageable.getOffset();
+        int end = (int) ( (pageable.getOffset() + pageable.getPageSize()) > products.size() ?  products.size() : pageable.getOffset() + pageable.getPageSize());
+
+        products = products.subList(start,end);
+
+        return new PageImpl<Product>(products,pageable,this.searchProduct(name,color,category,features,fromCreateAt,toCreateAt).size());
+    }
+
 
     @Override
     public boolean existsByName(String name) {

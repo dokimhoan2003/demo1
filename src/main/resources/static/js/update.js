@@ -278,8 +278,8 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.ok) {
            const data = await response.json();
            console.log(data);
-          // Điều hướng về danh sách sản phẩm sau khi cập nhật thành công
-          window.location.href = "http://192.84.103.230:9898/products"; // URL của trang danh sách sản phẩm
+           // Điều hướng về danh sách sản phẩm sau khi cập nhật thành công
+           window.location.href = "http://192.84.103.230:9898/products"; // URL của trang danh sách sản phẩm
         } else {
           console.error("Cập nhật thất bại.");
         }

@@ -1,5 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+
+//    function formatDateInput(input) {
+//        if (input.value) {
+//            const [year, month, day] = input.value.split("-");
+//            input.value = `${year}/${month}/${day}`;
+//        }
+//    }
+//
+//    function unformatDateInput(input) {
+//        if (input.value) {
+//            const [year, month, day] = input.value.split("/");
+//            input.value = `${year}-${month}-${day}`;
+//        }
+//    }
         let productId;
         document.querySelectorAll('.btn-delete').forEach(button => {
                 button.addEventListener('click', function () {
@@ -22,4 +36,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error('Error delete:', error);
             }
         });
+
+
 });
