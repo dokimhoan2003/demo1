@@ -1,19 +1,57 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+     document.querySelectorAll(".bi-calendar3").forEach((icon, index) => {
+            icon.addEventListener("click", function() {
+                const dateInput = index === 0 ? document.getElementById("fromCreateAt") : document.getElementById("toCreateAt");
+                dateInput.focus();
+            });
+        });
 
-//    function formatDateInput(input) {
-//        if (input.value) {
-//            const [year, month, day] = input.value.split("-");
-//            input.value = `${year}/${month}/${day}`;
+    document.getElementById("fromCreateAt").addEventListener("change", function(e) {
+        const date = new Date(e.target.value);
+       if (e.target.value) {
+               const formattedDate = date.toLocaleDateString('ja-JP', {
+                   year: 'numeric',
+                   month: '2-digit',
+                   day: '2-digit'
+               }).replace(/\//g, '-');
+               document.getElementById("create_at_from").value = formattedDate;
+           } else {
+               document.getElementById("create_at_from").value = '';
+           }
+    });
+
+    document.getElementById("toCreateAt").addEventListener("change", function(e) {
+        const date = new Date(e.target.value);
+        if(e.target.value) {
+           const formattedDate = date.toLocaleDateString('ja-JP', {
+                       year: 'numeric',
+                       month: '2-digit',
+                       day: '2-digit'
+                   }).replace(/\//g, '-');
+                   document.getElementById("create_at_to").value = formattedDate;
+        }else {
+            document.getElementById("create_at_to").value = '';
+        }
+
+    });
+
+
+
+//    // Đặt lại khi trường văn bản từ chọn ngày 'fromCreateAt' trống
+//    document.getElementById("create_at_from").addEventListener("input", function() {
+//        if (this.value === "") {
+//            document.getElementById("fromCreateAt").value = "";
 //        }
-//    }
+//    });
 //
-//    function unformatDateInput(input) {
-//        if (input.value) {
-//            const [year, month, day] = input.value.split("/");
-//            input.value = `${year}-${month}-${day}`;
+//    // Đặt lại khi trường văn bản từ chọn ngày 'toCreateAt' trống
+//    document.getElementById("create_at_to").addEventListener("input", function() {
+//        if (this.value === "") {
+//            document.getElementById("toCreateAt").value = "";
 //        }
-//    }
+//    });
+
         let productId;
         document.querySelectorAll('.btn-delete').forEach(button => {
                 button.addEventListener('click', function () {

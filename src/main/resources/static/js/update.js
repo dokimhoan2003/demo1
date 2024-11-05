@@ -36,55 +36,75 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // chọn ảnh mới từ file input
-  imageFilesInput.addEventListener("change", function (event) {
+
+
+
+
+      // chọn ảnh mới từ file input
+      imageFilesInput.addEventListener("change", function (event) {
       const files = event.target.files;
       const previewContainer = document.getElementById("imageDetailsPreview");
 
+      let qualityImageCurrent = document.querySelectorAll("#imageDetailsPreview .image-container").length;
+      if(qualityImageCurrent + files.length > 6) {
+           isValid = false;
+           imageFilesError.style.display = "block";
+           imageFilesError.textContent = "Number image details must be <= 6";
+           event.target.value = "";
+           return;
+      }
+
       for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        if(file.size > maxSize) {
-            isValid = false;
-            imageFilesError.style.display = "block";
-            imageFilesError.textContent = `File ${file.name} is too large! Maximum size is 10MB`;
-            event.target.value = "";
-            continue;
-        }else {
-            imageFilesError.style.display = "none";
-        }
-        listAddImages.push(file);
-        // Hiển thị ảnh mới lên giao diện
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const div = document.createElement("div");
-          div.className = "me-2 mb-2 position-relative image-container";
+          const file = files[i];
+          if(file.size > maxSize) {
+                        isValid = false;
+                        imageFilesError.style.display = "block";
+                        imageFilesError.textContent = `File ${file.name} is too large! Maximum size is 10MB`;
+                        event.target.value = "";
+                        continue;
+                    }else if(files.length > 6) {
+                        isValid = false;
+                        imageFilesError.style.display = "block";
+                        imageFilesError.textContent = "Number image details must be <= 6";
+                        event.target.value = "";
+                        continue;
+                    }else{
+                        imageFilesError.style.display = "none";
+                    }
+                    listAddImages.push(file);
 
-          const img = document.createElement("img");
-          img.src = e.target.result;
-          img.className = "img-thumbnail";
-          img.width = 200;
-          img.alt = "Detail Image";
+                    // Hiển thị ảnh mới lên giao diện
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                      const div = document.createElement("div");
+                      div.className = "me-2 mb-2 position-relative image-container";
 
-          const btnRemove = document.createElement("button");
-          btnRemove.className = "btn position-absolute top-0 end-0";
-          btnRemove.style.right = "5px";
-          btnRemove.style.top = "5px";
+                      const img = document.createElement("img");
+                      img.src = e.target.result;
+                      img.className = "img-thumbnail";
+                      img.width = 200;
+                      img.alt = "Detail Image";
 
-          const icon = document.createElement("i");
-          icon.className = "bi bi-x-circle-fill text-info";
+                      const btnRemove = document.createElement("button");
+                      btnRemove.className = "btn position-absolute top-0 end-0";
+                      btnRemove.style.right = "5px";
+                      btnRemove.style.top = "5px";
 
-          btnRemove.appendChild(icon);
-          btnRemove.addEventListener("click", function () {
-            previewContainer.removeChild(div); // Xóa ảnh khỏi giao diện
-            listAddImages.splice(i, 1); // Xóa ảnh khỏi danh sách
-          });
+                      const icon = document.createElement("i");
+                      icon.className = "bi bi-x-circle-fill text-info";
 
-          div.appendChild(img);
-          div.appendChild(btnRemove);
-          previewContainer.appendChild(div);
-        };
+                      btnRemove.appendChild(icon);
+                      btnRemove.addEventListener("click", function () {
+                        previewContainer.removeChild(div); // Xóa ảnh khỏi giao diện
+                        listAddImages.splice(i, 1); // Xóa ảnh khỏi danh sách
+                      });
 
-        reader.readAsDataURL(file); // Đọc và hiển thị ảnh mới
+                      div.appendChild(img);
+                      div.appendChild(btnRemove);
+                      previewContainer.appendChild(div);
+                    };
+
+                    reader.readAsDataURL(file); // Đọc và hiển thị ảnh mới
       }
     });
 

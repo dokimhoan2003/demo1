@@ -28,17 +28,11 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/products")
-@SessionAttributes("searchRequest")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    // Tạo searchRequest mới khi session bắt đầu
-    @ModelAttribute("searchRequest")
-    public SearchRequest setUpSearchRequest() {
-        return new SearchRequest();
-    }
 
     @GetMapping("/check-name")
     @ResponseBody
@@ -57,9 +51,6 @@ public class ProductController {
                                  Model model) {
 
         Page<Product> products = productService.searchProduct(name, color, category, features, fromCreateAt, toCreateAt, page);
-
-
-
 
         model.addAttribute("name",name);
         model.addAttribute("color",color);

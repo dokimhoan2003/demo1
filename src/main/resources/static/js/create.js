@@ -34,14 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 thumbnailElement.innerHTML = `<img src="${e.target.result}" alt="Image" class="img-thumbnail" width="100">
                     `;
                 thumbnailPreview.appendChild(thumbnailElement);
-
-//                thumbnailElement
-//                  .querySelector("#btnRemoveThumbnail")
-//                  .addEventListener("click", function () {
-//                    const fileIndex = parseInt(this.getAttribute("data-index"));
-//                    selectedThumbnail.splice(fileIndex, 1); // Xóa file khỏi mảng
-//                    previewSelectedThumbnail(); // Cập nhật lại giao diện
-//                  });
               };
               reader.readAsDataURL(file); // đọc file
             });
@@ -74,6 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   let selectedDetailImages = [];
+  let totalImageFileUpload = 0;
   imageFilesInput.addEventListener("change", function (e) {
     var files = e.target.files;
 
@@ -81,17 +74,20 @@ document.addEventListener("DOMContentLoaded", function () {
     selectedDetailImages.push(...newFiles);
 
     for (var i = 0; i < files.length; i++) {
-      var file = files[i];
-      if (file.size > maxSize) {
-        isValid = false;
-        imageFilesError.style.display = "block";
-        imageFilesError.textContent = `File ${file.name} is too large! Maximum size is 10MB`;
-        e.target.value = "";
-        break;
-      } else {
-        imageFilesError.style.display = "none";
-      }
+        totalImageFileUpload += files.length;
+        var file = files[i];
+        if (file.size > maxSize) {
+            isValid = false;
+            imageFilesError.style.display = "block";
+            imageFilesError.textContent = `File ${file.name} is too large! Maximum size is 10MB`;
+            e.target.value = "";
+            break;
+        } else {
+            imageFilesError.style.display = "none";
+         }
     }
+
+
     previewSelectedImages();
 
   });
@@ -240,9 +236,14 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
+
     // validate images file
     const files = imageFilesInput.files;
-    if (files.length > 6) {
+    if(totalImageFileUpload > 6) {
+        isValid = false;
+        imageFilesError.style.display = "block";
+        imageFilesError.textContent = "Number detail image must be <= 6";
+    }else if (files.length > 6) {
       isValid = false;
       imageFilesError.style.display = "block";
       imageFilesError.textContent = "Number detail image must be <= 6";

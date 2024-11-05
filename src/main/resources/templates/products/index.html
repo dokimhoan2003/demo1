@@ -10,6 +10,45 @@
             rel="stylesheet"
     />
     <script th:src="@{/js/index.js}"></script>
+    <style>
+        .date-input-from {
+            position: relative;
+        }
+        .date-input-to {
+            position: relative;
+        }
+        .date-input-from input[type="text"] {
+            padding-right: 30px;
+        }
+        .date-input-to input[type="text"] {
+            padding-right: 30px;
+        }
+        .date-input-from .bi-calendar3 {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #111;
+            cursor: pointer;
+        }
+        .date-input-to .bi-calendar3 {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #111;
+            cursor: pointer;
+        }
+        #fromCreateAt, #toCreateAt {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+
+        }
+    </style>
 </head>
 <body>
 
@@ -26,48 +65,33 @@
                             <input type="text" id="priceSearch" class="form-control" name="name" th:value="${param.name}">
                         </div>
                     </div>
+
                     <div class="mb-3 row">
                         <div class="col-sm-4">
                             <label class=" col-form-label">CreateAt</label>
                         </div>
-                        <div class="col-sm-8 d-flex flex-wrap">
-                            <div class="me-4">
-                                <input type="date" id="create_at_from" class="form-control"
-                                       name="fromCreateAt"
-                                       th:value="${param.fromCreateAt != null ?param.fromCreateAt:''}"
-                                >
+                        <div class="col-sm-8 d-flex flex-wrap align-items-center">
+
+                            <div class="date-input-from col-4 me-3">
+                                <input type="text" id="create_at_from" class="form-control" th:value="${param.fromCreateAt != null ?param.fromCreateAt:''}" placeholder="yyyy-MM-dd"/>
+                                <i class="bi bi-calendar3"></i>
+                                <input type="date" id="fromCreateAt" name="fromCreateAt" th:value="${param.fromCreateAt != null ?param.fromCreateAt:''}"/>
                             </div>
-                            <div class="me-4">
+
+                            <div class="me-3">
                                 <i class="bi bi-arrow-right"></i>
                             </div>
-                            <div>
-                                <input type="date" id="create_at_to" class="form-control"
-                                       name="toCreateAt"
-                                       th:value="${param.toCreateAt != null ?param.toCreateAt:''}"
-                                >
+
+                            <div class="date-input-to col-4" >
+                                <input type="text" id="create_at_to" class="form-control" th:value="${param.toCreateAt != null ?param.toCreateAt:''}" placeholder="yyyy-MM-dd"/>
+                                <i class="bi bi-calendar3"></i>
+                                <input type="date" id="toCreateAt" name="toCreateAt" th:value="${param.toCreateAt != null ?param.toCreateAt:''}"/>
                             </div>
+
                         </div>
-<!--                        <div class="col-sm-8 d-flex flex-wrap">-->
-<!--                            <div class="me-4">-->
-<!--                                <input type="date" id="create_at_from" class="form-control"-->
-<!--                                       name="fromCreateAt"-->
-<!--                                       th:value="${param.fromCreateAt != null ?param.fromCreateAt:''}"-->
-<!--                                >-->
-<!--                            </div>-->
-<!--                            <div class="me-4">-->
-<!--                                <i class="bi bi-arrow-right"></i>-->
-<!--                            </div>-->
-<!--                            <div>-->
-<!--                                <input type="text" id="create_at_to" class="form-control" placeholder="yyyy-MM-dd"-->
-<!--                                       name="toCreateAt"-->
-<!--                                       th:value="${param.toCreateAt != null ? #temporals.format(param.toCreateAt, 'yyyy-MM-dd') : ''}"-->
-<!--                                       onfocus="formatDateInput(this)"-->
-<!--                                       onblur="unformatDateInput(this)"-->
-<!--                                >-->
-<!--                            </div>-->
-<!--                        </div>-->
 
                     </div>
+
                     <div class="mb-3 row">
                         <label for="colorSearch" class="col-sm-4 col-form-label">Color</label>
                         <div class="col-sm-8">
@@ -175,7 +199,7 @@
             <td>
                 <img th:src="@{'/images/' +${product.thumbnail} }" width="90" class="img-thumbnail">
             </td>
-            <td th:text="${#dates.format(product.createdAt,'yyyy/MM/dd')}"></td>
+            <td th:text="${#dates.format(product.createdAt,'yyyy-MM-dd')}"></td>
 
             <td style="white-space:nowrap">
                 <a class="btn btn-primary btn-sm" th:href="@{/products/update/{id}(id=${product.id})}">Sửa</a>
@@ -186,7 +210,7 @@
     </table>
 
     <!-- Pagination -->
-    <ul class="pagination d-flex justify-content-center" th:if="${!products.empty}"
+    <ul class="pagination d-flex justify-content-center" th:if="${totalPages > 1}"
         th:with="searchUrl=${
     (name == null || name == '') &&
     (color == null || color == '') &&
