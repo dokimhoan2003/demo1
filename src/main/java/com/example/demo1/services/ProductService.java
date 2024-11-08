@@ -4,9 +4,7 @@ package com.example.demo1.services;
 import com.example.demo1.models.Product;
 import com.example.demo1.models.ProductImage;
 import com.example.demo1.request.ProductRequest;
-import com.example.demo1.request.SearchRequest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;

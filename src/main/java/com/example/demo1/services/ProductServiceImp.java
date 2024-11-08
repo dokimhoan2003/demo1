@@ -6,7 +6,6 @@ import com.example.demo1.models.ProductImage;
 import com.example.demo1.repository.ProductImageRepository;
 import com.example.demo1.repository.ProductRepository;
 import com.example.demo1.request.ProductRequest;
-import com.example.demo1.request.SearchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;

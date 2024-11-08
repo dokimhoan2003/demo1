@@ -3,15 +3,11 @@ package com.example.demo1.controllers;
 import com.example.demo1.models.Product;
 import com.example.demo1.models.ProductFeature;
 import com.example.demo1.request.ProductRequest;
-import com.example.demo1.request.SearchRequest;
 import com.example.demo1.response.MessageResponse;
 import com.example.demo1.services.ProductService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +28,8 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+
 
 
     @GetMapping("/check-name")
