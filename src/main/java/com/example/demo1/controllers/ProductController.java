@@ -31,7 +31,6 @@ public class ProductController {
 
 
 
-
     @GetMapping("/check-name")
     @ResponseBody
     public ResponseEntity<Boolean> checkName(@RequestParam String name) {

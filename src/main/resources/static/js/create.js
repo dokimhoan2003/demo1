@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       try {
         const response = await fetch(
-          `http://192.84.103.230:9898/products/check-name?name=${encodeURIComponent(
+          `http://192.168.1.220:9898/products/check-name?name=${encodeURIComponent(
             name
           )}`
         );

@@ -30,4 +30,9 @@ public class User {
             inverseJoinColumns = @JoinColumn(
                     name = "role_id", referencedColumnName = "id"))
     private Collection<Role> roles;
+
+    @Column(name = "verification_code",length = 64)
+    private String verificationCode;
+
+    private boolean enabled;
 }

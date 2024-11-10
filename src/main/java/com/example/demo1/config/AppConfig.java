@@ -1,12 +1,12 @@
 package com.example.demo1.config;
 
+import com.example.demo1.components.CustomAuthenticationEntryPoint;
 import com.example.demo1.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +22,9 @@ public class AppConfig{
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -40,10 +43,12 @@ public class AppConfig{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/auth/register","/auth/login").permitAll()
+                        .requestMatchers("/auth/**",
+                                "/css/**", "/js/**","/images/**","/fonts/**","/favicon.ico","/assets/**").permitAll()
                         .anyRequest().authenticated()
                 ).formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(Customizer.withDefaults());
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint));
         return http.build();
     }
 

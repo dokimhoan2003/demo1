@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
       emailError.style.display = "block";
     } else if(!emailRegex.test(email)) {
       isValid = false;
-      emailError.textContent = "Invalid email format";
+      emailError.textContent = "Enter a valid email address";
       emailError.style.display = "block";
     }else {
       emailError.style.display = "none";
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
       phoneError.style.display = "block";
     }else if(!phoneRegex.test(phone)) {
       isValid = false;
-      phoneError.textContent = "Phone maximum 10 number";
+      phoneError.textContent = "Enter a valid phone number";
       phoneError.style.display = "block";
     } else {
       phoneError.style.display = "none";

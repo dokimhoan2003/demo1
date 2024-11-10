@@ -11,27 +11,28 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-4">
-            <h2 class="text-center mb-4">Login</h2>
+            <h2 class="text-center mb-4">Log in to your account</h2>
+            <p class="text-center mb-4">Please enter your email and password:</p>
 
             <div th:if="${loginErrorMessage}" class="alert alert-danger" role="alert">
                 <span th:text="${loginErrorMessage}"></span>
             </div>
 
             <form class="formLogin" method="post" th:action="@{/auth/login}" th:object="${loginRequest}">
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="text" id="email" class="form-control" th:field="*{email}">
+                <div class="mb-4">
+<!--                    <label for="email" class="form-label">Email</label>-->
+                    <input type="text" id="email" class="form-control" th:field="*{email}" placeholder="Email">
                     <p id="emailError" class="text-danger" style="display: none"></p>
                 </div>
 
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" th:field="*{password}">
+                <div class="mb-4">
+<!--                    <label for="password" class="form-label">Password</label>-->
+                    <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Password">
                     <p id="passwordError" class="text-danger" style="display: none"></p>
                 </div>
 
                 <div class="mb-3">
-                    <a class="d-flex justify-content-end text-decoration-none" th:href="@{/auth/register}" >Register now ?</a>
+                   <a class="d-flex justify-content-end text-decoration-none" th:href="@{/auth/register}">Create an account?</a>
                 </div>
 
                 <div class="d-grid">

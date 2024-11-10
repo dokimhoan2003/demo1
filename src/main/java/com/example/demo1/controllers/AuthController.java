@@ -5,13 +5,16 @@ import com.example.demo1.repository.UserRepository;
 import com.example.demo1.request.LoginRequest;
 import com.example.demo1.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +24,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.List;
 
 @Controller
 @RequestMapping("/auth")
@@ -33,6 +37,14 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
 
+    @GetMapping("/verify")
+    public String verifyUser(@RequestParam("code") String code) {
+        if(userService.verifyEmail(code)) {
+            return "users/verify_success";
+        }else {
+            return "users/verify_fail";
+        }
+    }
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
@@ -49,23 +61,42 @@ public class AuthController {
     }
 
 
-    @PostMapping("/login")
+
+
+        @PostMapping("/login")
     public String handleLogin(@ModelAttribute("loginRequest") LoginRequest loginRequest,
                               Model model,
+                              HttpSession session,
                               HttpServletRequest request) {
 
         try {
-            UserDetails userDetails = userService.loadUserByUsername(loginRequest.getEmail());
-            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword(),userDetails.getAuthorities());
+            // Tạo đối tượng xác thực
+            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword());
             Authentication authentication = authenticationManager.authenticate(authRequest);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+
+            // Lưu vào SecurityContext
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            securityContext.setAuthentication(authentication);
+
+            // Lưu SecurityContext vào session
+            HttpSession existingSession = request.getSession(false);
+            if (existingSession != null) {
+                existingSession.invalidate();
+            }
+            session = request.getSession(true);
+            session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+
+
             model.addAttribute("loginRequest",loginRequest);
             return "redirect:/";
         } catch (BadCredentialsException e) {
-            model.addAttribute("loginErrorMessage", "Invalid username or password");
+            model.addAttribute("loginErrorMessage", "Invalid email or password");
+            return "users/login";
+        }catch (DisabledException e) {
+            model.addAttribute("loginErrorMessage", "Your account is not verified. Please check email.");
             return "users/login";
         }
-
     }
 
 
@@ -78,16 +109,34 @@ public class AuthController {
     @PostMapping("/register")
     public String handleRegister(@ModelAttribute("user") User user,
                                  BindingResult bindingResult,
+                                 HttpServletRequest request,
                                  Model model) {
         if (bindingResult.hasErrors()) {
             return "users/register";
         }
         try {
-            userService.register(user);
+
+            userService.register(user,getSiteURL(request));
             return "redirect:/auth/login";
         } catch (Exception e) {
             model.addAttribute("registerErrorMessage", e.getMessage());
             return "users/register";
         }
     }
+
+    private String getSiteURL(HttpServletRequest request) {
+        String scheme = request.getScheme();
+        String serverName = request.getServerName();
+        int serverPort = request.getServerPort();
+
+        String siteURL = scheme + "://" + serverName;
+
+        if ((scheme.equals("http") && serverPort != 80) ||
+                (scheme.equals("https") && serverPort != 443)) {
+            siteURL += ":" + serverPort;
+        }
+
+        return siteURL;
+    }
+
 }
