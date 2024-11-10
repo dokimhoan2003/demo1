@@ -63,7 +63,7 @@ public class AuthController {
 
 
 
-        @PostMapping("/login")
+    @PostMapping("/login")
     public String handleLogin(@ModelAttribute("loginRequest") LoginRequest loginRequest,
                               Model model,
                               HttpSession session,
@@ -89,7 +89,7 @@ public class AuthController {
 
 
             model.addAttribute("loginRequest",loginRequest);
-            return "redirect:/";
+            return "redirect:/home";
         } catch (BadCredentialsException e) {
             model.addAttribute("loginErrorMessage", "Invalid email or password");
             return "users/login";
