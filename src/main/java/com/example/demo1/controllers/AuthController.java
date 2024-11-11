@@ -70,16 +70,14 @@ public class AuthController {
                               HttpServletRequest request) {
 
         try {
-            // Tạo đối tượng xác thực
+
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword());
             Authentication authentication = authenticationManager.authenticate(authRequest);
 
 
-            // Lưu vào SecurityContext
             SecurityContext securityContext = SecurityContextHolder.getContext();
             securityContext.setAuthentication(authentication);
 
-            // Lưu SecurityContext vào session
             HttpSession existingSession = request.getSession(false);
             if (existingSession != null) {
                 existingSession.invalidate();

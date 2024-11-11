@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,7 +20,12 @@
 <body>
 <div class="header">
     <nav>
-        <h2 class="logo">Demo</h2>
+        <div sec:authorize="isAnonymous()">
+            <h2 class="logo" >Demo</h2>
+        </div>
+        <div sec:authorize="isAuthenticated()">
+            <h2 class="fs-5">Welcome,<span class="fs-5" sec:authentication="principal.username"></span>!</h2>
+        </div>
         <ul>
             <li>
                 <a th:href="@{/home}"><i class="bi bi-house-door-fill"></i> Home</a>
@@ -41,10 +46,17 @@
                 >
             </li>
         </ul>
-        <div class="btnGroup">
-            <a class="btn btn-info me-3" th:href="@{/auth/login}">Login</a>
-            <a class="btn btn-info" th:href="@{/auth/register}">Register</a>
+        <div sec:authorize="isAnonymous()" class="btnGroup">
+            <a class="btn btn-info me-3" th:href="@{/auth/login}">
+                Login<i class="bi bi-box-arrow-in-left mx-2"></i>
+            </a>
         </div>
+        <div sec:authorize="isAuthenticated()" class="btnGroup">
+            <a class="btn btn-info me-3" th:href="@{/auth/logout}">
+                Logout<i class="bi bi-box-arrow-right mx-2"></i>
+            </a>
+        </div>
+
     </nav>
 </div>
 
