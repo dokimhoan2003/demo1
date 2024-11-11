@@ -24,7 +24,8 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private String category;
+    @ManyToOne
+    private Category category;
 
     private String brand;
 

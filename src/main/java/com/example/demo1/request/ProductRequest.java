@@ -1,5 +1,6 @@
 package com.example.demo1.request;
 
+import com.example.demo1.models.Category;
 import com.example.demo1.models.ProductFeature;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class ProductRequest {
     private String description;
 
 //    @NotEmpty(message = "Category cannot be empty")
-    private String category;
+    private Long categoryId;
 
 //    @Size(min=1, max=25,message = "The brand must be between  1 and 25 characters")
     private String brand;

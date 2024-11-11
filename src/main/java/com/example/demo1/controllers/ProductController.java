@@ -1,9 +1,11 @@
 package com.example.demo1.controllers;
 
+import com.example.demo1.models.Category;
 import com.example.demo1.models.Product;
 import com.example.demo1.models.ProductFeature;
 import com.example.demo1.request.ProductRequest;
 import com.example.demo1.response.MessageResponse;
+import com.example.demo1.services.CategoryService;
 import com.example.demo1.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private CategoryService categoryService;
+
 
 
     @GetMapping("/check-name")
@@ -40,23 +45,24 @@ public class ProductController {
     @GetMapping("/search")
     public String searchProducts(@RequestParam(name = "name",required = false, defaultValue = "") String name,
                                  @RequestParam(name = "color",required = false, defaultValue = "") String color,
-                                 @RequestParam(name = "category",required = false, defaultValue = "") String category,
+                                 @RequestParam(name = "categoryId",required = false) Long categoryId,
                                  @RequestParam(name = "features",required = false) List<String> features,
                                  @RequestParam(name = "fromCreateAt",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromCreateAt,
                                  @RequestParam(name = "toCreateAt",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toCreateAt,
                                  @RequestParam(defaultValue = "1") int page,
                                  Model model) {
 
-        Page<Product> products = productService.searchProduct(name, color, category, features, fromCreateAt, toCreateAt, page);
+        Page<Product> products = productService.searchProduct(name, color, categoryId, features, fromCreateAt, toCreateAt, page);
 
         model.addAttribute("name",name);
         model.addAttribute("color",color);
-        model.addAttribute("category",category);
+        model.addAttribute("categoryId",categoryId);
         model.addAttribute("features",features);
         model.addAttribute("fromCreateAt",fromCreateAt);
         model.addAttribute("toCreateAt",toCreateAt);
 
         model.addAttribute("products", products);
+        model.addAttribute("categories",categoryService.getAllCategories());
         model.addAttribute("totalPages",products.getTotalPages());
         model.addAttribute("currentPage",page);
         return "products/index";
@@ -66,7 +72,7 @@ public class ProductController {
     @GetMapping()
     public String getAllProducts(@RequestParam(name = "name", required = false, defaultValue = "") String name,
                                  @RequestParam(name = "color", required = false, defaultValue = "") String color,
-                                 @RequestParam(name = "category", required = false, defaultValue = "") String category,
+                                 @RequestParam(name = "categoryId",required = false) Long categoryId,
                                  @RequestParam(name = "features", required = false) List<String> features,
                                  @RequestParam(name = "fromCreateAt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromCreateAt,
                                  @RequestParam(name = "toCreateAt", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toCreateAt,
@@ -90,12 +96,13 @@ public class ProductController {
 
         model.addAttribute("name", name);
         model.addAttribute("color", color);
-        model.addAttribute("category", category);
+        model.addAttribute("categoryId", categoryId);
         model.addAttribute("features", features);
         model.addAttribute("fromCreateAt", fromCreateAt);
         model.addAttribute("toCreateAt", toCreateAt);
 
         model.addAttribute("products", products);
+        model.addAttribute("categories",categoryService.getAllCategories());
         model.addAttribute("totalPages", products.getTotalPages());
         model.addAttribute("currentPage", page);
 
@@ -106,6 +113,8 @@ public class ProductController {
     public String createProduct(Model model) {
         ProductRequest productRequest = new ProductRequest();
         model.addAttribute("productRequest",productRequest);
+        List<Category> categories = categoryService.getAllCategories();
+        model.addAttribute("categories",categories);
         return "products/create";
     }
 
@@ -114,9 +123,9 @@ public class ProductController {
     public String createProduct(@Valid @ModelAttribute ProductRequest productRequest,
                                 BindingResult result, Model model) throws IOException {
 
-        if (result.hasErrors()) {
-            return "products/create";
-        }
+//        if (result.hasErrors()) {
+//            return "products/create";
+//        }
         Product product = productService.createProduct(productRequest);
         return "redirect:/products";
     }
@@ -133,7 +142,8 @@ public class ProductController {
             productRequest.setPrice(product.getPrice());
             productRequest.setBrand(product.getBrand());
             productRequest.setDescription(product.getDescription());
-            productRequest.setCategory(product.getCategory());
+            productRequest.setCategoryId(product.getCategory().getId());
+
             List<String> features = new ArrayList<>();
             List<ProductFeature> productFeatures = product.getFeatures();
             for(ProductFeature productFeature : productFeatures) {
@@ -143,7 +153,10 @@ public class ProductController {
             productRequest.setFeatures(features);
             productRequest.setColor(product.getColor());
 
+            List<Category> categories = categoryService.getAllCategories();
+            model.addAttribute("categories",categories);
             model.addAttribute("productRequest",productRequest);
+
 
             return "products/update";
         }catch (Exception e) {

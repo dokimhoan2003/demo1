@@ -5,6 +5,7 @@ import com.example.demo1.models.Role;
 import com.example.demo1.models.User;
 import com.example.demo1.repository.RoleRepository;
 import com.example.demo1.repository.UserRepository;
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
@@ -78,8 +80,56 @@ public class UserServiceImp implements UserService{
             userRepository.save(user);
             return true;
         }
-
     }
+
+    @Override
+    public void forgotPassword(String email,String siteURL) throws Exception {
+        User user = userRepository.findByEmail(email);
+        if(user == null) {
+            throw new  Exception("Invalid Email");
+        }
+        String randomToken = UUID.randomUUID().toString();
+        user.setToken(randomToken);
+        userRepository.save(user);
+        sendToken(user, siteURL);
+    }
+
+    @Override
+    public void setPassword(User user,String token) throws Exception {
+        User existingUser = userRepository.findByToken(token);
+        if(existingUser == null) {
+            throw new Exception("Invalid Token");
+        }
+        existingUser.setToken(null);
+        existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(existingUser);
+    }
+
+    private void sendToken(User user, String siteURL) throws MessagingException, UnsupportedEncodingException {
+        String toAddress = user.getEmail();
+        String fromAddress = "kimhoando2003@gmail.com";
+        String senderName = "Demo";
+        String subject = "Setup password";
+        String content = "Please click the link below to setup password:<br>"
+                + "<h3><a href=\"[[URL]]\" target=\"_self\">UPDATE</a></h3>";
+
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        helper.setFrom(fromAddress, senderName);
+        helper.setTo(toAddress);
+        helper.setSubject(subject);
+
+        content = content.replace("[[name]]", user.getFirstName() + ' ' + user.getLastName());
+        String resetPasswordURL = siteURL + "/auth/update_password?token=" + user.getToken();
+
+        content = content.replace("[[URL]]", resetPasswordURL);
+
+        helper.setText(content, true);
+
+        javaMailSender.send(message);
+    }
+
 
     private void sendVerificationEmail(User user, String siteURL) throws Exception {
         String toAddress = user.getEmail();

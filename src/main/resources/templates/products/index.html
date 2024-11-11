@@ -107,17 +107,21 @@
                 </div>
 
                 <div class="col-sm-6">
+
                     <div class="mb-3 row">
                         <label for="categorySearch" class="col-sm-4 col-form-label">Category</label>
                         <div class="col-sm-8">
-                            <select id="categorySearch" class="form-select" name="category" th:value="${param.category}">
-                                <option value="" th:selected="${category == ''}" selected >-- Select category --</option>
-                                <option value="computer" th:selected="${category == 'computer'}">Computer</option>
-                                <option value="phone" th:selected="${category == 'phone'}">Phone</option>
-                                <option value="ipad" th:selected="${category == 'ipad'}">Ipad</option>
+                            <select id="categorySearch" class="form-select" name="categoryId" th:value="${param.categoryId}">
+                                <option value="" th:selected="${categoryId == null}">-- Select category --</option>
+                                <option th:each="category : ${categories}"
+                                        th:value="${category.id}"
+                                        th:text="${category.categoryName}"
+                                        th:selected="${category.id == categoryId}">
+                                </option>
                             </select>
                         </div>
                     </div>
+
                     <div class="mb-3 row">
                         <label class="col-sm-4 col-form-label">Features</label>
                         <div class="mt-2 col-sm-8 d-flex flex-wrap">
@@ -187,7 +191,7 @@
             <td th:text="${product.name}"></td>
             <td th:text="${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}"></td>
             <td th:text="${product.description}"></td>
-            <td th:text="${product.category}"></td>
+            <td th:text="${product.category.categoryName}"></td>
             <td th:text="${product.brand}"></td>
             <td th:text="${product.color}"></td>
             <td>

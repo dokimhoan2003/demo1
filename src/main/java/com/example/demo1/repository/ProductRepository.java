@@ -25,7 +25,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "AND (:fromCreateAt IS NULL OR DATE(p.createdAt) >= :fromCreateAt) " +
             "AND (:toCreateAt IS NULL OR DATE(p.createdAt) <= :toCreateAt) " +
             "AND (:color IS NULL OR :color = '' OR p.color = :color) " +
-            "AND (:category IS NULL OR :category = '' OR p.category = :category) " +
+            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
             "GROUP BY p.id " +
             "HAVING COUNT(f.feature) >= :featureCount ORDER BY p.createdAt DESC")
     List<Product> search(
@@ -33,7 +33,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("fromCreateAt") LocalDate fromCreateAt,
             @Param("toCreateAt") LocalDate toCreateAt,
             @Param("color") String color,
-            @Param("category") String category,
+            @Param("categoryId") Long categoryId,
             @Param("features") List<String> features,
             @Param("featureCount") int featureCount);
 
@@ -44,13 +44,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "AND (:fromCreateAt IS NULL OR DATE(p.createdAt) >= :fromCreateAt) " +
             "AND (:toCreateAt IS NULL OR DATE(p.createdAt) <= :toCreateAt) " +
             "AND (:color IS NULL OR :color = '' OR  p.color = :color) " +
-            "AND (:category IS NULL OR :category = '' OR p.category = :category) ORDER BY p.createdAt DESC")
+            "AND (:categoryId IS NULL  OR p.category.id = :categoryId) ORDER BY p.createdAt DESC")
     List<Product> searchWithoutFeature(
             @Param("name") String name,
             @Param("fromCreateAt") LocalDate fromCreateAt,
             @Param("toCreateAt") LocalDate toCreateAt,
             @Param("color") String color,
-            @Param("category") String category);
+            @Param("categoryId") Long categoryId);
 
     boolean existsByName(String name);
 }

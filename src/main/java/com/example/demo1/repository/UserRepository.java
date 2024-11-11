@@ -10,4 +10,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.verificationCode = :code")
     public User findByVerificationCode(@Param("code") String code);
+
+    @Query("SELECT u FROM User u WHERE u.token = :token")
+    public User findByToken(@Param("token") String token);
+
 }

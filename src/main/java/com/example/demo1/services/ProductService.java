@@ -22,14 +22,14 @@ public interface ProductService {
 
     public List<Product> searchProduct(String name,
                                        String color,
-                                       String category,
+                                       Long categoryId,
                                        List<String> features,
                                        LocalDate fromCreateAt,
                                        LocalDate toCreateAt);
 
     public Page<Product> searchProduct(String name,
                                        String color,
-                                       String category,
+                                       Long categoryId,
                                        List<String> features,
                                        LocalDate fromCreateAt,
                                        LocalDate toCreateAt,

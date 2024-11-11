@@ -23,6 +23,7 @@
           <form
             method="post"
             enctype="multipart/form-data"
+            th:action="@{/products/update}"
             th:object="${productRequest}"
           >
             <h2>Update a product</h2>
@@ -203,16 +204,15 @@
               <div class="col-sm-8">
                 <select
                   class="form-select"
-                  th:field="${productRequest.category}"
+                  th:field="${productRequest.categoryId}"
                 >
-                  <option value="Computer" selected>Computer</option>
-                  <option value="Phone">Phone</option>
-                  <option value="Ipad">Ipad</option>
+                  <option th:each="category: ${categories}" th:value="${category.id}" th:text="${category.categoryName}"></option>
+
                 </select>
                 <p
-                  th:if="${#fields.hasErrors('category')}"
+                  th:if="${#fields.hasErrors('categoryId')}"
                   th:errorclass="text-danger"
-                  th:errors="${productRequest.category}"
+                  th:errors="${productRequest.categoryId}"
                 ></p>
               </div>
             </div>

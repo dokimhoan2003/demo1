@@ -1,8 +1,10 @@
 package com.example.demo1.services;
 
+import com.example.demo1.models.Category;
 import com.example.demo1.models.Product;
 import com.example.demo1.models.ProductFeature;
 import com.example.demo1.models.ProductImage;
+import com.example.demo1.repository.CategoryRepository;
 import com.example.demo1.repository.ProductImageRepository;
 import com.example.demo1.repository.ProductRepository;
 import com.example.demo1.request.ProductRequest;
@@ -27,11 +29,13 @@ public class ProductServiceImp implements ProductService {
     private ProductRepository productRepository;
 
     @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
     private ProductImageRepository productImageRepository;
 
     @Override
     public Page<Product> getAllProducts(int pageNumber) {
-//        return productRepository.findAll(Sort.by(Sort.Direction.DESC,"createdAt"));
         Pageable pageRequest = PageRequest.of(pageNumber-1,5, Sort.by("createdAt").descending());
         return productRepository.findAll(pageRequest);
     }
@@ -64,8 +68,11 @@ public class ProductServiceImp implements ProductService {
         newProduct.setDescription(productRequest.getDescription());
         newProduct.setPrice(productRequest.getPrice());
         newProduct.setCreatedAt(new Date());
-        newProduct.setCategory(productRequest.getCategory());
         newProduct.setColor(productRequest.getColor());
+
+        Category category = categoryRepository.findById(productRequest.getCategoryId()).get();
+        newProduct.setCategory(category);
+
 
         List<String> features = productRequest.getFeatures();
         List<ProductFeature> productFeatures = new ArrayList<>();
@@ -125,7 +132,8 @@ public class ProductServiceImp implements ProductService {
         }
 
         // Update product info other
-        product.setCategory(productRequest.getCategory());
+        Category category = categoryRepository.findById(productRequest.getCategoryId()).get();
+        product.setCategory(category);
         product.setName(productRequest.getName());
         product.setBrand(productRequest.getBrand());
         product.setPrice(productRequest.getPrice());
@@ -221,27 +229,27 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public List<Product> searchProduct(String name, String color, String category, List<String> features, LocalDate fromCreateAt, LocalDate toCreateAt) {
+    public List<Product> searchProduct(String name, String color, Long categoryId, List<String> features, LocalDate fromCreateAt, LocalDate toCreateAt) {
 
-        if(name.isEmpty() && fromCreateAt == null && toCreateAt == null && color.isEmpty() && category.isEmpty() && features == null) {
+        if(name.isEmpty() && fromCreateAt == null && toCreateAt == null && color.isEmpty() && categoryId == null && features == null) {
             return productRepository.findAll(Sort.by(Sort.Direction.DESC,"createdAt"));
         }else if(features == null) {
-            return productRepository.searchWithoutFeature(name,fromCreateAt,toCreateAt,color,category);
+            return productRepository.searchWithoutFeature(name,fromCreateAt,toCreateAt,color,categoryId);
         } else {
-            return productRepository.search(name,fromCreateAt,toCreateAt,color,category,features,features.size());
+            return productRepository.search(name,fromCreateAt,toCreateAt,color,categoryId,features,features.size());
         }
     }
     @Override
-    public Page<Product> searchProduct(String name, String color, String category, List<String> features, LocalDate fromCreateAt, LocalDate toCreateAt, int pageNumber) {
+    public Page<Product> searchProduct(String name, String color, Long categoryId, List<String> features, LocalDate fromCreateAt, LocalDate toCreateAt, int pageNumber) {
 
-        List<Product> products = this.searchProduct(name,color,category,features,fromCreateAt,toCreateAt);
+        List<Product> products = this.searchProduct(name,color,categoryId,features,fromCreateAt,toCreateAt);
         Pageable pageable = PageRequest.of(pageNumber-1,5);
         int start = (int) pageable.getOffset();
         int end = (int) ( (pageable.getOffset() + pageable.getPageSize()) > products.size() ?  products.size() : pageable.getOffset() + pageable.getPageSize());
 
         products = products.subList(start,end);
 
-        return new PageImpl<Product>(products,pageable,this.searchProduct(name,color,category,features,fromCreateAt,toCreateAt).size());
+        return new PageImpl<Product>(products,pageable,this.searchProduct(name,color,categoryId,features,fromCreateAt,toCreateAt).size());
     }
 
 

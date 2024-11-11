@@ -113,7 +113,6 @@ public class AuthController {
             return "users/register";
         }
         try {
-
             userService.register(user,getSiteURL(request));
             return "redirect:/auth/login";
         } catch (Exception e) {
@@ -121,6 +120,46 @@ public class AuthController {
             return "users/register";
         }
     }
+
+    @GetMapping("/reset_password")
+    public String resetPassword(Model model) {
+        model.addAttribute("user",new User());
+        return "users/forgot_password";
+    }
+
+    @PostMapping("/reset_password")
+    public String handleResetPassword(Model model,
+                                      @ModelAttribute("user") User user,
+                                      HttpServletRequest request) {
+        try{
+            userService.forgotPassword(user.getEmail(),getSiteURL(request));
+            return "redirect:/home";
+        }catch (Exception e) {
+            model.addAttribute("forgotPasswordErrorMessage",e.getMessage());
+            return "users/forgot_password";
+        }
+    }
+
+    @GetMapping("/update_password")
+    public String updatePassword(Model model) {
+        model.addAttribute("user",new User());
+        return "users/update_password";
+    }
+
+    @PostMapping("/update_password")
+    public String handleUpdatePassword(Model model,
+                                       @ModelAttribute("user") User user,
+                                       @RequestParam("token") String token) {
+        try {
+            userService.setPassword(user,token);
+            return "redirect:/auth/login";
+        }catch (Exception e) {
+            model.addAttribute("updatePasswordErrorMessage",e.getMessage());
+            return "users/update_password";
+        }
+    }
+
+
 
     private String getSiteURL(HttpServletRequest request) {
         String scheme = request.getScheme();
