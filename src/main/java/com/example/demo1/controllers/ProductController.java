@@ -123,9 +123,6 @@ public class ProductController {
     public String createProduct(@Valid @ModelAttribute ProductRequest productRequest,
                                 BindingResult result, Model model) throws IOException {
 
-//        if (result.hasErrors()) {
-//            return "products/create";
-//        }
         Product product = productService.createProduct(productRequest);
         return "redirect:/products";
     }

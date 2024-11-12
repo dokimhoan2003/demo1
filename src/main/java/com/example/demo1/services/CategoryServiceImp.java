@@ -2,10 +2,12 @@ package com.example.demo1.services;
 
 import com.example.demo1.models.Category;
 import com.example.demo1.repository.CategoryRepository;
+import com.example.demo1.request.CategoryRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoryServiceImp implements CategoryService {
@@ -16,5 +18,39 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
+    }
+
+    @Override
+    public Category createCategory(CategoryRequest categoryRequest) {
+        Category newCategory = new Category();
+        newCategory.setCategoryName(categoryRequest.getCategoryName());
+        return categoryRepository.save(newCategory);
+    }
+
+    @Override
+    public Category updateCategory(Long id, CategoryRequest categoryRequest) throws Exception {
+        Category category = this.getCategoryById(id);
+        category.setCategoryName(categoryRequest.getCategoryName());
+        return categoryRepository.save(category);
+
+    }
+
+    @Override
+    public void deleteCategory(Long id) {
+        categoryRepository.deleteById(id);
+    }
+
+    @Override
+    public Category getCategoryById(Long id) throws Exception {
+        Optional<Category> categoryOptional = categoryRepository.findById(id);
+        if(categoryOptional.isEmpty()) {
+            throw new Exception("Category not found");
+        }
+        return categoryOptional.get();
+    }
+
+    @Override
+    public boolean checkCategoryName(String categoryName) {
+        return categoryRepository.existsByCategoryName(categoryName);
     }
 }

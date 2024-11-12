@@ -9,213 +9,523 @@
             href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
             rel="stylesheet"
     />
-    <script th:src="@{/js/index.js}"></script>
-    <style>
-        .date-input-from {
-            position: relative;
-        }
-        .date-input-to {
-            position: relative;
-        }
-        .date-input-from input[type="text"] {
-            padding-right: 30px;
-        }
-        .date-input-to input[type="text"] {
-            padding-right: 30px;
-        }
-        .date-input-from .bi-calendar3 {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #111;
-            cursor: pointer;
-        }
-        .date-input-to .bi-calendar3 {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #111;
-            cursor: pointer;
-        }
-        #fromCreateAt, #toCreateAt {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
 
-        }
-    </style>
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+            href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+            rel="stylesheet"
+    />
+
+    <link rel="stylesheet" type="text/css" th:href="@{css/index.css}"/>
+
+    <script th:src="@{/js/index.js}"></script>
+    <!--    <style>-->
+    <!--        .date-input-from {-->
+    <!--            position: relative;-->
+    <!--        }-->
+    <!--        .date-input-to {-->
+    <!--            position: relative;-->
+    <!--        }-->
+    <!--        .date-input-from input[type="text"] {-->
+    <!--            padding-right: 30px;-->
+    <!--        }-->
+    <!--        .date-input-to input[type="text"] {-->
+    <!--            padding-right: 30px;-->
+    <!--        }-->
+    <!--        .date-input-from .bi-calendar3 {-->
+    <!--            position: absolute;-->
+    <!--            right: 10px;-->
+    <!--            top: 50%;-->
+    <!--            transform: translateY(-50%);-->
+    <!--            color: #111;-->
+    <!--            cursor: pointer;-->
+    <!--        }-->
+    <!--        .date-input-to .bi-calendar3 {-->
+    <!--            position: absolute;-->
+    <!--            right: 10px;-->
+    <!--            top: 50%;-->
+    <!--            transform: translateY(-50%);-->
+    <!--            color: #111;-->
+    <!--            cursor: pointer;-->
+    <!--        }-->
+    <!--        #fromCreateAt, #toCreateAt {-->
+    <!--            position: absolute;-->
+    <!--            top: 0;-->
+    <!--            left: 0;-->
+    <!--            width: 100%;-->
+    <!--            height: 100%;-->
+    <!--            opacity: 0;-->
+
+    <!--        }-->
+    <!--    </style>-->
 </head>
 <body>
 
 <!--Search by-->
-<nav class="navbar navbar-expand-sm bg-light">
-    <div class="container-fluid">
-        <form method="get" action="/products/search" id="searchForm" class="w-100">
-            <h6 class="mb-3 text-danger">Search by</h6>
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="mb-3 row">
-                        <label for="priceSearch" class="col-sm-4 col-form-label">Name</label>
-                        <div class="col-sm-8">
-                            <input type="text" id="priceSearch" class="form-control" name="name" th:value="${param.name}">
-                        </div>
-                    </div>
+<!--<nav class="navbar navbar-expand-sm bg-light">-->
+<!--    <div class="container-fluid">-->
+<!--        <form method="get" action="/products/search" id="searchForm" class="w-100">-->
+<!--            <h6 class="mb-3 text-danger">Search by</h6>-->
+<!--            <div class="row">-->
+<!--                <div class="col-sm-6">-->
+<!--                    <div class="mb-3 row">-->
+<!--                        <label for="priceSearch" class="col-sm-4 col-form-label">Name</label>-->
+<!--                        <div class="col-sm-8">-->
+<!--                            <input type="text" id="priceSearch" class="form-control" name="name" th:value="${param.name}">-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <div class="mb-3 row">
-                        <div class="col-sm-4">
-                            <label class=" col-form-label">CreateAt</label>
-                        </div>
-                        <div class="col-sm-8 d-flex flex-wrap align-items-center">
+<!--                    <div class="mb-3 row">-->
+<!--                        <div class="col-sm-4">-->
+<!--                            <label class=" col-form-label">CreateAt</label>-->
+<!--                        </div>-->
+<!--                        <div class="col-sm-8 d-flex flex-wrap align-items-center">-->
 
-                            <div class="date-input-from col-4 me-3">
-                                <input type="text" id="create_at_from" class="form-control" th:value="${param.fromCreateAt != null ?param.fromCreateAt:''}" placeholder="yyyy-MM-dd"/>
-                                <i class="bi bi-calendar3"></i>
-                                <input type="date" id="fromCreateAt" name="fromCreateAt" th:value="${param.fromCreateAt != null ?param.fromCreateAt:''}"/>
-                            </div>
+<!--                            <div class="date-input-from col-4 me-3">-->
+<!--                                <input type="text" id="create_at_from" class="form-control" th:value="${param.fromCreateAt != null ?param.fromCreateAt:''}" placeholder="yyyy-MM-dd"/>-->
+<!--                                <i class="bi bi-calendar3"></i>-->
+<!--                                <input type="date" id="fromCreateAt" name="fromCreateAt" th:value="${param.fromCreateAt != null ?param.fromCreateAt:''}"/>-->
+<!--                            </div>-->
 
-                            <div class="me-3">
-                                <i class="bi bi-arrow-right"></i>
-                            </div>
+<!--                            <div class="me-3">-->
+<!--                                <i class="bi bi-arrow-right"></i>-->
+<!--                            </div>-->
 
-                            <div class="date-input-to col-4" >
-                                <input type="text" id="create_at_to" class="form-control" th:value="${param.toCreateAt != null ?param.toCreateAt:''}" placeholder="yyyy-MM-dd"/>
-                                <i class="bi bi-calendar3"></i>
-                                <input type="date" id="toCreateAt" name="toCreateAt" th:value="${param.toCreateAt != null ?param.toCreateAt:''}"/>
-                            </div>
+<!--                            <div class="date-input-to col-4" >-->
+<!--                                <input type="text" id="create_at_to" class="form-control" th:value="${param.toCreateAt != null ?param.toCreateAt:''}" placeholder="yyyy-MM-dd"/>-->
+<!--                                <i class="bi bi-calendar3"></i>-->
+<!--                                <input type="date" id="toCreateAt" name="toCreateAt" th:value="${param.toCreateAt != null ?param.toCreateAt:''}"/>-->
+<!--                            </div>-->
 
-                        </div>
+<!--                        </div>-->
 
-                    </div>
+<!--                    </div>-->
 
-                    <div class="mb-3 row">
-                        <label for="colorSearch" class="col-sm-4 col-form-label">Color</label>
-                        <div class="col-sm-8">
-                            <select id="colorSearch" class="form-select" name="color" th:value="${param.color}">
-                                <option value="" th:selected="${color == ''}" selected>-- Select color --</option>
-                                <option value="black" th:selected="${color == 'black'}">Black</option>
-                                <option value="white" th:selected="${color == 'white'}">White</option>
-                                <option value="silver" th:selected="${color == 'silver'}">Silver</option>
-                            </select>
-                        </div>
-                    </div>
+<!--                    <div class="mb-3 row">-->
+<!--                        <label for="colorSearch" class="col-sm-4 col-form-label">Color</label>-->
+<!--                        <div class="col-sm-8">-->
+<!--                            <select id="colorSearch" class="form-select" name="color" th:value="${param.color}">-->
+<!--                                <option value="" th:selected="${color == ''}" selected>&#45;&#45; Select color &#45;&#45;</option>-->
+<!--                                <option value="black" th:selected="${color == 'black'}">Black</option>-->
+<!--                                <option value="white" th:selected="${color == 'white'}">White</option>-->
+<!--                                <option value="silver" th:selected="${color == 'silver'}">Silver</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                </div>
+<!--                </div>-->
 
-                <div class="col-sm-6">
+<!--                <div class="col-sm-6">-->
 
-                    <div class="mb-3 row">
-                        <label for="categorySearch" class="col-sm-4 col-form-label">Category</label>
-                        <div class="col-sm-8">
-                            <select id="categorySearch" class="form-select" name="categoryId" th:value="${param.categoryId}">
-                                <option value="" th:selected="${categoryId == null}">-- Select category --</option>
-                                <option th:each="category : ${categories}"
-                                        th:value="${category.id}"
-                                        th:text="${category.categoryName}"
-                                        th:selected="${category.id == categoryId}">
-                                </option>
-                            </select>
-                        </div>
-                    </div>
+<!--                    <div class="mb-3 row">-->
+<!--                        <label for="categorySearch" class="col-sm-4 col-form-label">Category</label>-->
+<!--                        <div class="col-sm-8">-->
+<!--                            <select id="categorySearch" class="form-select" name="categoryId" th:value="${param.categoryId}">-->
+<!--                                <option value="" th:selected="${categoryId == null}">&#45;&#45; Select category &#45;&#45;</option>-->
+<!--                                <option th:each="category : ${categories}"-->
+<!--                                        th:value="${category.id}"-->
+<!--                                        th:text="${category.categoryName}"-->
+<!--                                        th:selected="${category.id == categoryId}">-->
+<!--                                </option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <div class="mb-3 row">
-                        <label class="col-sm-4 col-form-label">Features</label>
-                        <div class="mt-2 col-sm-8 d-flex flex-wrap">
-                            <div class="form-check mx-2">
-                                <input class="form-check-input" type="checkbox" id="chk_gps"
-                                       name="features"
-                                       value="gps"
-                                       th:checked="${param.features != null && param.features.contains('gps')}"
-                                >
-                                <label class="form-check-label" for="chk_gps">GPS</label>
-                            </div>
-                            <div class="form-check mx-2">
-                                <input class="form-check-input"  type="checkbox" id="chk_nfc"
-                                       name="features"
-                                       value="nfc"
-                                       th:checked="${param.features != null && param.features.contains('nfc')}"
-                                >
-                                <label class="form-check-label" for="chk_nfc">NFC</label>
-                            </div>
-                            <div class="form-check mx-2">
-                                <input class="form-check-input" type="checkbox" id="chk_waterproof"
-                                       name="features"
-                                       value="waterproof"
-                                       th:checked="${param.features != null && param.features.contains('waterproof')}"
-                                >
-                                <label class="form-check-label" for="chk_waterproof">Waterproof</label>
-                            </div>
-                        </div>
-                    </div>
+<!--                    <div class="mb-3 row">-->
+<!--                        <label class="col-sm-4 col-form-label">Features</label>-->
+<!--                        <div class="mt-2 col-sm-8 d-flex flex-wrap">-->
+<!--                            <div class="form-check mx-2">-->
+<!--                                <input class="form-check-input" type="checkbox" id="chk_gps"-->
+<!--                                       name="features"-->
+<!--                                       value="gps"-->
+<!--                                       th:checked="${param.features != null && param.features.contains('gps')}"-->
+<!--                                >-->
+<!--                                <label class="form-check-label" for="chk_gps">GPS</label>-->
+<!--                            </div>-->
+<!--                            <div class="form-check mx-2">-->
+<!--                                <input class="form-check-input"  type="checkbox" id="chk_nfc"-->
+<!--                                       name="features"-->
+<!--                                       value="nfc"-->
+<!--                                       th:checked="${param.features != null && param.features.contains('nfc')}"-->
+<!--                                >-->
+<!--                                <label class="form-check-label" for="chk_nfc">NFC</label>-->
+<!--                            </div>-->
+<!--                            <div class="form-check mx-2">-->
+<!--                                <input class="form-check-input" type="checkbox" id="chk_waterproof"-->
+<!--                                       name="features"-->
+<!--                                       value="waterproof"-->
+<!--                                       th:checked="${param.features != null && param.features.contains('waterproof')}"-->
+<!--                                >-->
+<!--                                <label class="form-check-label" for="chk_waterproof">Waterproof</label>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <div class="me-4 d-flex justify-content-end">
-                        <a href="/products"><input class="btn btn-success me-3" type="button" value="Refresh"></a>
-                        <input class="btn btn-primary" type="submit" value="Search">
-                    </div>
+<!--                    <div class="me-4 d-flex justify-content-end">-->
+<!--                        <a href="/products"><input class="btn btn-success me-3" type="button" value="Refresh"></a>-->
+<!--                        <input class="btn btn-primary" type="submit" value="Search">-->
+<!--                    </div>-->
 
-                </div>
-            </div>
-        </form>
-    </div>
-</nav>
+<!--                </div>-->
+<!--            </div>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</nav>-->
 
 <!--Table-->
-<div class="container mt-3">
-    <div style="display: flex; justify-content: flex-start; align-items: center;">
-        <a class="btn btn-primary" href="/products/create">Create Product</a>
+<!--<div class="container mt-3">-->
+<!--    <div style="display: flex; justify-content: flex-start; align-items: center;">-->
+<!--        <a class="btn btn-primary" href="/products/create">Create Product</a>-->
+<!--    </div>-->
+
+<!--    <table class="table">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>ID</th>-->
+<!--            <th>Name</th>-->
+<!--            <th>Price</th>-->
+<!--            <th>Description</th>-->
+<!--            <th>Category</th>-->
+<!--            <th>Brand</th>-->
+<!--            <th>Color</th>-->
+<!--            <th>Feature</th>-->
+<!--            <th>Thumbnail</th>-->
+<!--            <th>Created At</th>-->
+<!--            <th>Action</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr th:each="product : ${products}">-->
+<!--            <td th:text="${product.id}"></td>-->
+<!--            <td th:text="${product.name}"></td>-->
+<!--            <td th:text="${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}"></td>-->
+<!--            <td th:text="${product.description}"></td>-->
+<!--            <td th:text="${product.category.categoryName}"></td>-->
+<!--            <td th:text="${product.brand}"></td>-->
+<!--            <td th:text="${product.color}"></td>-->
+<!--            <td>-->
+<!--                <ul style="padding-left: 15px; margin: 0;">-->
+<!--                    <li th:each="a : ${product.features}" th:text="${a.feature}"></li>-->
+<!--                </ul>-->
+<!--            </td>-->
+
+<!--            <td>-->
+<!--                <img th:src="@{'/images/' +${product.thumbnail} }" width="90" class="img-thumbnail">-->
+<!--            </td>-->
+<!--            <td th:text="${#dates.format(product.createdAt,'yyyy-MM-dd')}"></td>-->
+
+<!--            <td style="white-space:nowrap">-->
+<!--                <a class="btn btn-primary btn-sm" th:href="@{/products/update/{id}(id=${product.id})}">Sửa</a>-->
+<!--                <a class="btn btn-primary btn-sm btn-delete" th:attr="data-id=${product.id}" data-bs-toggle="modal" data-bs-target="#deleteModal">Xóa</a>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+
+<!--    &lt;!&ndash; Pagination &ndash;&gt;-->
+<!--    <ul class="pagination d-flex justify-content-center" th:if="${totalPages > 1}"-->
+<!--        th:with="searchUrl=${-->
+<!--    (name == null || name == '') &&-->
+<!--    (color == null || color == '') &&-->
+<!--    (category == null || category == '') &&-->
+<!--    (features == null || features.isEmpty()) &&-->
+<!--    fromCreateAt == null &&-->
+<!--    toCreateAt == null-->
+<!--        ? '/products?page='-->
+<!--        : '/products/search?'-->
+<!--          + (name != null && name != '' ? 'name=' + name + '&' : '')-->
+<!--          + (color != null && color != '' ? 'color=' + color + '&' : '')-->
+<!--          + (category != null && category != '' ? 'category=' + category + '&' : '')-->
+<!--          + (features != null && !features.isEmpty() ? 'features=' + #strings.listJoin(features, ',') + '&' : '')-->
+<!--          + (fromCreateAt != null ? 'fromCreateAt=' + #temporals.format(fromCreateAt, 'yyyy-MM-dd') + '&' : '')-->
+<!--          + (toCreateAt != null ? 'toCreateAt=' + #temporals.format(toCreateAt, 'yyyy-MM-dd') + '&' : '')-->
+<!--          + 'page='-->
+<!--}">-->
+
+<!--        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">-->
+<!--            <a class="page-link"-->
+<!--               th:href="@{${searchUrl} + ${currentPage - 1}}"-->
+<!--               th:if="${currentPage > 1}"-->
+<!--            >-->
+<!--                Previous-->
+<!--            </a>-->
+<!--            <span class="page-link" th:if="${currentPage == 1}">Previous</span>-->
+<!--        </li>-->
+
+<!--        <li th:each="i : ${#numbers.sequence(1, totalPages)}"-->
+<!--            th:classappend="${currentPage == i} ? 'active'"-->
+<!--            class="page-item"-->
+<!--        >-->
+<!--            <a class="page-link" th:href="@{${searchUrl} + ${i}}" th:text="${i}"></a>-->
+<!--        </li>-->
+
+<!--        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">-->
+<!--            <a class="page-link"-->
+<!--               th:href="@{${searchUrl} + ${currentPage + 1}}"-->
+<!--               th:if="${currentPage < totalPages}">-->
+<!--                Next-->
+<!--            </a>-->
+<!--            <span class="page-link" th:if="${currentPage == totalPages}">Next</span>-->
+<!--        </li>-->
+<!--    </ul>-->
+
+
+
+<!--</div>-->
+
+<!-- modal delete-->
+<!--<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <h4 class="modal-title" id="deleteModalLabel">Xóa product</h4>-->
+<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                Bạn có chắc muốn xóa product này không?-->
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--                <button type="button" id="btnConfirmDelete" class="btn btn-danger">Yes</button>-->
+<!--                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top d-flex align-items-center">
+    <div class="d-flex align-items-center justify-content-between">
+        <a href="index.html" class="logo d-flex align-items-center">
+            <span class="d-none d-lg-block">Admin</span>
+        </a>
+        <i class="bi bi-list toggle-sidebar-btn"></i>
     </div>
+    <!-- End Logo -->
 
-    <table class="table">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Description</th>
-            <th>Category</th>
-            <th>Brand</th>
-            <th>Color</th>
-            <th>Feature</th>
-            <th>Thumbnail</th>
-            <th>Created At</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="product : ${products}">
-            <td th:text="${product.id}"></td>
-            <td th:text="${product.name}"></td>
-            <td th:text="${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}"></td>
-            <td th:text="${product.description}"></td>
-            <td th:text="${product.category.categoryName}"></td>
-            <td th:text="${product.brand}"></td>
-            <td th:text="${product.color}"></td>
-            <td>
-                <ul style="padding-left: 15px; margin: 0;">
-                    <li th:each="a : ${product.features}" th:text="${a.feature}"></li>
+
+    <nav class="header-nav ms-auto">
+        <ul class="d-flex align-items-center">
+            <li class="nav-item d-block d-lg-none">
+                <a class="nav-link nav-icon search-bar-toggle" href="#">
+                    <i class="bi bi-search"></i>
+                </a>
+            </li>
+            <!-- End Search Icon-->
+
+            <li class="nav-item dropdown">
+                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                    <i class="bi bi-bell"></i>
+                    <span class="badge bg-primary badge-number">4</span> </a
+                ><!-- End Notification Icon -->
+            </li>
+
+            <!-- End Notification Nav -->
+
+            <li class="nav-item dropdown">
+                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                    <i class="bi bi-chat-left-text"></i>
+                    <span class="badge bg-success badge-number">3</span> </a
+                ><!-- End Messages Icon -->
+            </li>
+            <!-- End Messages Nav -->
+
+            <li class="nav-item dropdown pe-3">
+                <a
+                        class="nav-link nav-profile d-flex align-items-center pe-0"
+                        href="#"
+                        data-bs-toggle="dropdown"
+                >
+                    <img
+                            src="assets/img/profile-img.jpg"
+                            alt="Profile"
+                            class="rounded-circle"
+                    />
+                    <span class="d-none d-md-block dropdown-toggle ps-2"
+                    >K. Anderson</span
+                    > </a
+                ><!-- End Profile Iamge Icon -->
+
+                <ul
+                        class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile"
+                >
+                    <li class="dropdown-header">
+                        <h6>User</h6>
+                        <span>Web Designer</span>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider" />
+                    </li>
+
+                    <li>
+                        <a
+                                class="dropdown-item d-flex align-items-center"
+                                href="users-profile.html"
+                        >
+                            <i class="bi bi-person"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider" />
+                    </li>
+
+                    <li>
+                        <a
+                                class="dropdown-item d-flex align-items-center"
+                                href="users-profile.html"
+                        >
+                            <i class="bi bi-gear"></i>
+                            <span>Account Settings</span>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider" />
+                    </li>
+
+                    <li>
+                        <a
+                                class="dropdown-item d-flex align-items-center"
+                                href="pages-faq.html"
+                        >
+                            <i class="bi bi-question-circle"></i>
+                            <span>Need Help?</span>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider" />
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Sign Out</span>
+                        </a>
+                    </li>
                 </ul>
-            </td>
+                <!-- End Profile Dropdown Items -->
+            </li>
+            <!-- End Profile Nav -->
+        </ul>
+    </nav>
+    <!-- End Icons Navigation -->
+</header>
+<!-- End Header -->
 
-            <td>
-                <img th:src="@{'/images/' +${product.thumbnail} }" width="90" class="img-thumbnail">
-            </td>
-            <td th:text="${#dates.format(product.createdAt,'yyyy-MM-dd')}"></td>
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="index.html">
+                <i class="bi bi-grid"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <!-- End Dashboard Nav -->
 
-            <td style="white-space:nowrap">
-                <a class="btn btn-primary btn-sm" th:href="@{/products/update/{id}(id=${product.id})}">Sửa</a>
-                <a class="btn btn-primary btn-sm btn-delete" th:attr="data-id=${product.id}" data-bs-toggle="modal" data-bs-target="#deleteModal">Xóa</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+        <li class="nav-heading">Pages</li>
 
-    <!-- Pagination -->
-    <ul class="pagination d-flex justify-content-center" th:if="${totalPages > 1}"
-        th:with="searchUrl=${
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{/categories}">
+                <i class="bi bi-question-circle"></i>
+                <span>Category</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{/products}">
+                <i class="bi bi-question-circle"></i>
+                <span>Product</span>
+            </a>
+        </li>
+        <!-- End Profile Page Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{#}">
+                <i class="bi bi-person"></i>
+                <span>User</span>
+            </a>
+        </li>
+
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{#}">
+                <i class="bi bi-envelope"></i>
+                <span>Contact</span>
+            </a>
+        </li>
+        <!-- End Contact Page Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{/auth/register}">
+                <i class="bi bi-card-list"></i>
+                <span>Register</span>
+            </a>
+        </li>
+        <!-- End Register Page Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{/auth/login}">
+                <i class="bi bi-box-arrow-in-right"></i>
+                <span>Login</span>
+            </a>
+        </li>
+        <!-- End Login Page Nav -->
+    </ul>
+</aside>
+<!-- End Sidebar-->
+
+<main id="main" class="main">
+    <!--Table-->
+    <div class="container table-responsive">
+        <div class="mb-3" style="display: flex; justify-content: flex-end; align-items: center;">
+            <a class="btn btn-primary" href="/products/create">Create Product</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price</th>
+
+                <th>Category</th>
+
+                <th>Color</th>
+                <th>Feature</th>
+                <th>Thumbnail</th>
+                <th>Created At</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product : ${products}">
+                <td th:text="${product.id}"></td>
+                <td th:text="${product.name}"></td>
+                <td th:text="${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}"></td>
+                <td th:text="${product.category.categoryName}"></td>
+                <td th:text="${product.color}"></td>
+                <td>
+                    <ul style="padding-left: 15px; margin: 0;">
+                        <li th:each="a : ${product.features}" th:text="${a.feature}"></li>
+                    </ul>
+                </td>
+
+                <td>
+                    <img th:src="@{'/images/' +${product.thumbnail} }" width="70" class="img-thumbnail">
+                </td>
+                <td th:text="${#dates.format(product.createdAt,'yyyy-MM-dd')}"></td>
+
+                <td style="white-space:nowrap">
+                    <a class="btn btn-primary btn-sm" th:href="@{/products/update/{id}(id=${product.id})}">Sửa</a>
+                    <a class="btn btn-danger btn-sm btn-delete" th:attr="data-id=${product.id}" data-bs-toggle="modal" data-bs-target="#deleteModal">Xóa</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <ul class="pagination d-flex justify-content-end" th:if="${totalPages > 1}"
+            th:with="searchUrl=${
     (name == null || name == '') &&
     (color == null || color == '') &&
     (category == null || category == '') &&
@@ -233,55 +543,58 @@
           + 'page='
 }">
 
-        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-            <a class="page-link"
-               th:href="@{${searchUrl} + ${currentPage - 1}}"
-               th:if="${currentPage > 1}"
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{${searchUrl} + ${currentPage - 1}}"
+                   th:if="${currentPage > 1}"
+                >
+                    Previous
+                </a>
+                <span class="page-link" th:if="${currentPage == 1}">Previous</span>
+            </li>
+
+            <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                th:classappend="${currentPage == i} ? 'active'"
+                class="page-item"
             >
-                Previous
-            </a>
-            <span class="page-link" th:if="${currentPage == 1}">Previous</span>
-        </li>
+                <a class="page-link" th:href="@{${searchUrl} + ${i}}" th:text="${i}"></a>
+            </li>
 
-        <li th:each="i : ${#numbers.sequence(1, totalPages)}"
-            th:classappend="${currentPage == i} ? 'active'"
-            class="page-item"
-        >
-            <a class="page-link" th:href="@{${searchUrl} + ${i}}" th:text="${i}"></a>
-        </li>
-
-        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-            <a class="page-link"
-               th:href="@{${searchUrl} + ${currentPage + 1}}"
-               th:if="${currentPage < totalPages}">
-                Next
-            </a>
-            <span class="page-link" th:if="${currentPage == totalPages}">Next</span>
-        </li>
-    </ul>
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{${searchUrl} + ${currentPage + 1}}"
+                   th:if="${currentPage < totalPages}">
+                    Next
+                </a>
+                <span class="page-link" th:if="${currentPage == totalPages}">Next</span>
+            </li>
+        </ul>
 
 
 
-</div>
+    </div>
 
-<!-- modal delete-->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="deleteModalLabel">Xóa product</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Bạn có chắc muốn xóa product này không?
-            </div>
-            <div class="modal-footer">
-                <button type="button" id="btnConfirmDelete" class="btn btn-danger">Yes</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+    <!-- modal delete-->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="deleteModalLabel">Xóa product</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc muốn xóa product này không?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnConfirmDelete" class="btn btn-danger">Yes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+</main>
+<!-- End #main -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>

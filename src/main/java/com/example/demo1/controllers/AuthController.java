@@ -87,7 +87,7 @@ public class AuthController {
 
 
             model.addAttribute("loginRequest",loginRequest);
-            return "redirect:/home";
+            return "redirect:/products";
         } catch (BadCredentialsException e) {
             model.addAttribute("loginErrorMessage", "Invalid email or password");
             return "users/login";
