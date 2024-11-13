@@ -45,10 +45,13 @@ public class AppConfig{
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/auth/**",
                                 "/css/**", "/js/**","/images/**","/fonts/**","/favicon.ico","/assets/**").permitAll()
+                        .requestMatchers("/admin/**","/categories/**","/products/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 ).formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint));
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedPage("/auth/403"));
         return http.build();
     }
 

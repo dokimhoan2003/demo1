@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }else {
             try {
                     const response = await fetch(
-                      `http://192.84.103.230:9898/categories/check-name?name=${encodeURIComponent(
+                      `http://192.168.1.221:9898/categories/check-name?name=${encodeURIComponent(
                         nameCategory
                       )}`
                     );

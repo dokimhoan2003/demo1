@@ -12,14 +12,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public String handleNotFoundError(Model model) {
         model.addAttribute("error", "Trang bạn tìm kiếm không tồn tại!");
-        return "homes/error";
+        return "error/404";
     }
 
     // Xử lý các lỗi chung khác
-    @ExceptionHandler(Exception.class)
-    public String handleGlobalError(Model model, Exception ex) {
-        model.addAttribute("error", "Đã xảy ra lỗi. Vui lòng thử lại sau.");
-        return "homes/error";
-    }
+//    @ExceptionHandler(Exception.class)
+//    public String handleGlobalError(Model model, Exception ex) {
+//        model.addAttribute("error", "Đã xảy ra lỗi. Vui lòng thử lại sau.");
+//        return "error/404";
+//    }
 }
 

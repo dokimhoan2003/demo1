@@ -46,6 +46,11 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/403")
+    public String accessDenied() {
+       return "error/403";
+    }
+
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
         request.getSession().invalidate();

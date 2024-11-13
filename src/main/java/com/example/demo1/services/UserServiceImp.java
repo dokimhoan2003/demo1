@@ -8,6 +8,10 @@ import com.example.demo1.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,9 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +39,24 @@ public class UserServiceImp implements UserService{
 
     @Autowired
     private JavaMailSender javaMailSender;
+
+    @Override
+    public Page<User> getAllUsers(int pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber - 1, 5,Sort.by("id").descending());
+        return userRepository.findAll(pageable);
+    }
+
+    @Override
+    public User activeUser(Long id) throws Exception {
+        Optional<User> userOptional = userRepository.findById(id);
+        if(userOptional.isEmpty()) {
+            throw new Exception("User not found");
+        }
+        User user = userOptional.get();
+        user.setEnabled(!user.isEnabled());
+        return userRepository.save(user);
+
+    }
 
 
     @Override

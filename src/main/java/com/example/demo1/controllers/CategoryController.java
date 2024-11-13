@@ -5,6 +5,7 @@ import com.example.demo1.request.CategoryRequest;
 import com.example.demo1.response.MessageResponse;
 import com.example.demo1.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,12 +28,27 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.checkCategoryName(name), HttpStatus.OK);
     }
 
-    @GetMapping("")
-    public String getAllCategories(Model model) {
-        List<Category> categories = categoryService.getAllCategories();
+    @GetMapping("/search")
+    public String search(Model model,
+                         @RequestParam(name = "key", required = false, defaultValue = "") String key,
+                         @RequestParam(defaultValue = "1") int page) {
+        Page<Category> categories = categoryService.searchCategory(key,page);
+        model.addAttribute("key",key);
         model.addAttribute("categories",categories);
-//        CategoryRequest categoryRequest = new CategoryRequest();
-//        model.addAttribute("categoryRequest",categoryRequest);
+        model.addAttribute("totalPages",categories.getTotalPages());
+        model.addAttribute("currentPage",page);
+        return "categories/list";
+    }
+
+    @GetMapping("")
+    public String getAllCategories(Model model,
+                                   @RequestParam(defaultValue = "1") int page,
+                                   @RequestParam(name = "key", required = false, defaultValue = "") String key) {
+        Page<Category> categories = categoryService.getAllCategoriesWithPage(page);
+        model.addAttribute("key",key);
+        model.addAttribute("categories",categories);
+        model.addAttribute("totalPages",categories.getTotalPages());
+        model.addAttribute("currentPage",page);
         return "categories/list";
     }
 
