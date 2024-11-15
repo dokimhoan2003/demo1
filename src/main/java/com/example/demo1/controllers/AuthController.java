@@ -3,6 +3,7 @@ package com.example.demo1.controllers;
 import com.example.demo1.models.User;
 import com.example.demo1.repository.UserRepository;
 import com.example.demo1.request.LoginRequest;
+import com.example.demo1.request.ResetPasswordRequest;
 import com.example.demo1.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/auth")
@@ -32,6 +35,9 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -61,12 +67,8 @@ public class AuthController {
     public String login(Model model) {
         LoginRequest loginRequest = new LoginRequest();
         model.addAttribute("loginRequest",loginRequest);
-
         return "users/login";
     }
-
-
-
 
     @PostMapping("/login")
     public String handleLogin(@ModelAttribute("loginRequest") LoginRequest loginRequest,
@@ -90,14 +92,24 @@ public class AuthController {
             session = request.getSession(true);
             session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 
+            List<String> role = securityContext.getAuthentication().getAuthorities()
+                    .stream()
+                    .map(authority -> authority.getAuthority()).collect(Collectors.toList());
+            if(role.contains("ROLE_ADMIN")) {
+//                model.addAttribute("loginRequest",loginRequest);
+                return "redirect:/products";
+            }else {
+//                model.addAttribute("loginRequest",loginRequest);
+                return "redirect:/home";
+            }
 
-            model.addAttribute("loginRequest",loginRequest);
-            return "redirect:/products";
+
+
         } catch (BadCredentialsException e) {
             model.addAttribute("loginErrorMessage", "Invalid email or password");
             return "users/login";
         }catch (DisabledException e) {
-            model.addAttribute("loginErrorMessage", "Your account is not verified. Please check email.");
+            model.addAttribute("loginErrorMessage", "Your account is not verified.");
             return "users/login";
         }
     }
@@ -138,25 +150,26 @@ public class AuthController {
                                       HttpServletRequest request) {
         try{
             userService.forgotPassword(user.getEmail(),getSiteURL(request));
-            return "redirect:/home";
+            return "redirect:/auth/update_password";
         }catch (Exception e) {
             model.addAttribute("forgotPasswordErrorMessage",e.getMessage());
             return "users/forgot_password";
         }
     }
 
+
+
     @GetMapping("/update_password")
     public String updatePassword(Model model) {
-        model.addAttribute("user",new User());
+        model.addAttribute("resetPasswordRequest",new ResetPasswordRequest());
         return "users/update_password";
     }
 
     @PostMapping("/update_password")
     public String handleUpdatePassword(Model model,
-                                       @ModelAttribute("user") User user,
-                                       @RequestParam("token") String token) {
+                                       @ModelAttribute("resetPasswordRequest") ResetPasswordRequest resetPasswordRequest) {
         try {
-            userService.setPassword(user,token);
+            userService.setPassword(resetPasswordRequest.getPassword(),resetPasswordRequest.getToken());
             return "redirect:/auth/login";
         }catch (Exception e) {
             model.addAttribute("updatePasswordErrorMessage",e.getMessage());

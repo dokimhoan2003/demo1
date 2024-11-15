@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById('btnConfirmDelete').addEventListener('click', async function () {
             try {
-            const response = await fetch(`http://192.168.1.221:9898/categories/${categoryId}/confirm-delete`);
+            const response = await fetch(`http://192.84.103.230:9898/categories/${categoryId}/confirm-delete`);
             if (!response.ok) throw new Error('Network response was not ok');
             const result = await response.json();
             if (result.message === 'Delete Successfully') {

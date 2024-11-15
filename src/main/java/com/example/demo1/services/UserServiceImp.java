@@ -58,6 +58,33 @@ public class UserServiceImp implements UserService{
 
     }
 
+    @Override
+    public void createAccountAdmin(User user) throws Exception {
+        User existingUserAdmin = userRepository.findByEmail(user.getEmail());
+        if(existingUserAdmin != null) {
+            throw new Exception("Email already exists");
+        }
+        User newUserAdmin = new User();
+        newUserAdmin.setEmail(user.getEmail());
+        newUserAdmin.setPassword(passwordEncoder.encode(user.getPassword()));
+        newUserAdmin.setPhone(user.getPhone());
+        newUserAdmin.setFirstName(user.getFirstName());
+        newUserAdmin.setLastName(user.getLastName());
+
+        Role userRole = roleRepository.findByName("ROLE_ADMIN");
+        Role role = null;
+        if (userRole == null) {
+            role = new Role("ROLE_ADMIN");
+        }
+
+        newUserAdmin.setRoles(Arrays.asList(userRole != null ? userRole : role));
+
+        newUserAdmin.setVerificationCode(null);
+        newUserAdmin.setToken(null);
+        newUserAdmin.setEnabled(true);
+        userRepository.save(newUserAdmin);
+    }
+
 
     @Override
     public void register(User user,String siteURL) throws Exception {
@@ -115,13 +142,13 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
-    public void setPassword(User user,String token) throws Exception {
+    public void setPassword(String password,String token) throws Exception {
         User existingUser = userRepository.findByToken(token);
         if(existingUser == null) {
             throw new Exception("Invalid Token");
         }
         existingUser.setToken(null);
-        existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        existingUser.setPassword(passwordEncoder.encode(password));
         userRepository.save(existingUser);
     }
 
@@ -130,8 +157,9 @@ public class UserServiceImp implements UserService{
         String fromAddress = "kimhoando2003@gmail.com";
         String senderName = "Demo";
         String subject = "Setup password";
-        String content = "Please click the link below to setup password:<br>"
-                + "<h3><a href=\"[[URL]]\" target=\"_self\">UPDATE</a></h3>";
+        String content = "Dear [[name]],<br>" +
+                "Please enter code below to setup password:<br>"
+                + "Code change password: [[code]]";
 
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
@@ -141,9 +169,10 @@ public class UserServiceImp implements UserService{
         helper.setSubject(subject);
 
         content = content.replace("[[name]]", user.getFirstName() + ' ' + user.getLastName());
-        String resetPasswordURL = siteURL + "/auth/update_password?token=" + user.getToken();
+        String resetPasswordURL = siteURL + "/auth/update_password";
 
         content = content.replace("[[URL]]", resetPasswordURL);
+        content = content.replace("[[code]]", user.getToken());
 
         helper.setText(content, true);
 

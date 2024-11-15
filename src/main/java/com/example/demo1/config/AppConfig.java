@@ -43,7 +43,7 @@ public class AppConfig{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/auth/**",
+                        .requestMatchers("/home","/auth/**",
                                 "/css/**", "/js/**","/images/**","/fonts/**","/favicon.ico","/assets/**").permitAll()
                         .requestMatchers("/admin/**","/categories/**","/products/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

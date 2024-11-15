@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>demo</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+            rel="stylesheet"
+    />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+            href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+            rel="stylesheet"
+    />
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/index.css}"/>
+    <script th:src="@{/js/create_admin.js}"></script>
+</head>
+<body>
+
+<!-- ======= Header ======= -->
+<div th:replace="~{fragments/header :: header}">Header</div>
+<!-- End Header -->
+
+<!-- ======= Sidebar ======= -->
+<div th:replace="~{fragments/sidebar :: sidebar}">Sidebar</div>
+<!-- End Sidebar-->
+
+<main id="main" class="main">
+    <div class="container mt-3">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <h2 class="text-center mb-4">Create Account Admin</h2>
+                <div th:if="${createAdminErrorMessage}" class="alert alert-danger">
+                    <p  th:text="${createAdminErrorMessage}"></p>
+                </div>
+
+                <form class="formCreateAdmin" method="post" th:action="@{/admin/users/createAdmin}" th:object="${user}">
+
+                    <div class="mb-4">
+                        <input type="text" class="form-control" id="firstName" th:field="*{firstName}" placeholder="First Name">
+                        <p id="firstNameError" class="text-danger" style="display: none"></p>
+                    </div>
+
+
+                    <div class="mb-4">
+                        <input type="text" class="form-control" id="lastName" th:field="*{lastName}" placeholder="Last Name">
+                        <p id="lastNameError" class="text-danger" style="display: none"></p>
+                    </div>
+
+
+                    <div class="mb-4">
+                        <input type="tel" class="form-control" id="phone" th:field="*{phone}" placeholder="Phone">
+                        <p id="phoneError" class="text-danger" style="display: none"></p>
+                    </div>
+
+                    <div class="mb-4">
+
+                        <input type="text" class="form-control" id="email" th:field="*{email}" placeholder="Email">
+                        <p id="emailError" class="text-danger" style="display: none"></p>
+                    </div>
+
+                    <div class="mb-4">
+                        <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Password">
+                        <p id="passwordError" class="text-danger" style="display: none"></p>
+                    </div>
+
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
+

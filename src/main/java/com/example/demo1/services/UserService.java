@@ -10,7 +10,8 @@ public interface UserService extends UserDetailsService {
     public void register(User user,String siteURL) throws Exception;
     public boolean verifyEmail(String verificationCode);
     public void forgotPassword(String email,String siteURL) throws Exception;
-    public void setPassword(User user,String token) throws Exception;
+    public void setPassword(String password,String token) throws Exception;
     public Page<User> getAllUsers(int pageNumber);
     public User activeUser(Long id) throws Exception;
+    public void createAccountAdmin(User user) throws Exception;
 }

@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } else if (name !== initialNameValue) {
       try {
         const response = await fetch(
-          `http://192.168.1.221:9898/products/check-name?name=${encodeURIComponent(
+          `http://192.84.103.230:9898/products/check-name?name=${encodeURIComponent(
             name
           )}`
         );
@@ -286,7 +286,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const id = getProductId();
       try {
         const response = await fetch(
-          `http://192.168.1.221:9898/products/update/${id}`,
+          `http://192.84.103.230:9898/products/update/${id}`,
           {
             method: "POST",
             body: formData,
@@ -299,7 +299,7 @@ document.addEventListener("DOMContentLoaded", function () {
            const data = await response.json();
            console.log(data);
            // Điều hướng về danh sách sản phẩm sau khi cập nhật thành công
-           window.location.href = "http://192.168.1.221:9898/products"; // URL của trang danh sách sản phẩm
+           window.location.href = "http://192.84.103.230:9898/products"; // URL của trang danh sách sản phẩm
         } else {
           console.error("Cập nhật thất bại.");
         }
