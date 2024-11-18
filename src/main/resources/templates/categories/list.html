@@ -36,11 +36,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="deleteModalLabel">Delete Category</h4>
+                    <h4 class="modal-title" id="deleteModalLabel">Category Status</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Bạn có chắc muốn xóa category này không?
+                    Are you sure about this change?
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="btnConfirmDelete" class="btn btn-danger">Yes</button>
@@ -68,6 +68,7 @@
             <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
             </thead>
@@ -75,9 +76,17 @@
             <tr th:each="category : ${categories}">
                 <td th:text="${category.id}"></td>
                 <td th:text="${category.categoryName}"></td>
+                <td th:text="${category.status}"></td>
                 <td style="white-space:nowrap">
                     <a class="btn btn-primary btn-sm" th:href="@{/categories/update/{id}(id=${category.id})}">Update</a>
-                    <a class="btn btn-danger btn-sm btn-delete" th:attr="data-id=${category.id}" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</a>
+                    <a class="btn btn-sm btn-delete"
+                       th:with="status=${category.status ? 'Disable' : 'Enable'}"
+                       th:classappend="${status == 'Disable' ? 'btn-danger' : 'btn-success'}"
+                       th:attr="data-id=${category.id}"
+                       data-bs-toggle="modal" data-bs-target="#deleteModal"
+                    >
+                        <span th:text="${status}"></span>
+                    </a>
                 </td>
             </tr>
             </tbody>

@@ -11,7 +11,7 @@ public interface CategoryService {
     public List<Category> getAllCategories();
     public Category createCategory(CategoryRequest categoryRequest);
     public Category updateCategory(Long id, CategoryRequest categoryRequest) throws Exception;
-    public void deleteCategory(Long id);
+    public void deleteCategory(Long id) throws Exception;
     public Category getCategoryById(Long id) throws Exception;
     public boolean checkCategoryName(String categoryName);
     public List<Category> searchCategory(String key);

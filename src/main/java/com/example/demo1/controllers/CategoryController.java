@@ -100,10 +100,16 @@ public class CategoryController {
     @GetMapping("/{id}/confirm-delete")
     @ResponseBody
     public ResponseEntity<MessageResponse> confirmDelete(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
         MessageResponse messageResponse = new MessageResponse();
-        messageResponse.setMessage("Delete Successfully");
-        return new ResponseEntity<>(messageResponse, HttpStatus.OK);
+        try {
+            categoryService.deleteCategory(id);
+            messageResponse.setMessage("Delete Successfully");
+            return new ResponseEntity<>(messageResponse, HttpStatus.OK);
+        }catch (Exception e) {
+            messageResponse.setMessage("Delete Fail");
+            return new ResponseEntity<>(messageResponse, HttpStatus.NOT_FOUND);
+        }
+
     }
 
 

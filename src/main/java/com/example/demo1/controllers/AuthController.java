@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -41,6 +42,9 @@ public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private SessionRegistry sessionRegistry;
 
 
     @GetMapping("/verify")
@@ -73,7 +77,6 @@ public class AuthController {
     @PostMapping("/login")
     public String handleLogin(@ModelAttribute("loginRequest") LoginRequest loginRequest,
                               Model model,
-                              HttpSession session,
                               HttpServletRequest request) {
 
         try {
@@ -89,8 +92,14 @@ public class AuthController {
             if (existingSession != null) {
                 existingSession.invalidate();
             }
-            session = request.getSession(true);
+            HttpSession session = request.getSession(true);
             session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+
+
+            sessionRegistry.registerNewSession(
+                    session.getId(),
+                    authentication.getPrincipal()
+            );
 
             List<String> role = securityContext.getAuthentication().getAuthorities()
                     .stream()
@@ -102,9 +111,6 @@ public class AuthController {
 //                model.addAttribute("loginRequest",loginRequest);
                 return "redirect:/home";
             }
-
-
-
         } catch (BadCredentialsException e) {
             model.addAttribute("loginErrorMessage", "Invalid email or password");
             return "users/login";

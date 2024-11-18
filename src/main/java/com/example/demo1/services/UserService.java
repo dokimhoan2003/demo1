@@ -14,4 +14,6 @@ public interface UserService extends UserDetailsService {
     public Page<User> getAllUsers(int pageNumber);
     public User activeUser(Long id) throws Exception;
     public void createAccountAdmin(User user) throws Exception;
+    public User getUserById(Long id) throws Exception;
+    public void updateRole(Long id) throws Exception;
 }

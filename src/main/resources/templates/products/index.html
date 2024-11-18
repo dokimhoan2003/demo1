@@ -199,6 +199,7 @@
                 <th>Feature</th>
                 <th>Thumbnail</th>
                 <th>Created At</th>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
             </thead>
@@ -219,10 +220,18 @@
                     <img th:src="@{'/images/' +${product.thumbnail} }" width="70" class="img-thumbnail">
                 </td>
                 <td th:text="${#dates.format(product.createdAt,'yyyy-MM-dd')}"></td>
+                <td th:text="${product.status}"></td>
 
                 <td style="white-space:nowrap">
                     <a class="btn btn-primary btn-sm" th:href="@{/products/update/{id}(id=${product.id})}">Sửa</a>
-                    <a class="btn btn-danger btn-sm btn-delete" th:attr="data-id=${product.id}" data-bs-toggle="modal" data-bs-target="#deleteModal">Xóa</a>
+                    <a class="btn btn-sm btn-delete"
+                       th:with="status=${product.status ? 'Disable':'Enable'}"
+                       th:classappend="${status == 'Disable' ? 'btn-danger' : 'btn-success'}"
+                       th:attr="data-id=${product.id}"
+                       data-bs-toggle="modal" data-bs-target="#deleteModal"
+                    >
+                        <span th:text="${status}"></span>
+                    </a>
                 </td>
             </tr>
             </tbody>
@@ -284,11 +293,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="deleteModalLabel">Xóa product</h4>
+                    <h4 class="modal-title" id="deleteModalLabel">Product Status</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Bạn có chắc muốn xóa product này không?
+                    Are you sure about this change?
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="btnConfirmDelete" class="btn btn-danger">Yes</button>

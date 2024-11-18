@@ -185,11 +185,18 @@ public class ProductController {
 
     @GetMapping("/{id}/confirm-delete")
     @ResponseBody
-    public ResponseEntity<MessageResponse> confirmDelete(@PathVariable Long id) throws Exception {
-        productService.deleteProduct(id);
+    public ResponseEntity<MessageResponse> confirmDelete(@PathVariable Long id) {
         MessageResponse messageResponse = new MessageResponse();
-        messageResponse.setMessage("Delete Successfully");
-        return new ResponseEntity<>(messageResponse,HttpStatus.OK);
+        try {
+            productService.deleteProduct(id);
+
+            messageResponse.setMessage("Delete Successfully");
+            return new ResponseEntity<>(messageResponse,HttpStatus.OK);
+        }catch (Exception e) {
+            messageResponse.setMessage("Delete Fail");
+            return new ResponseEntity<>(messageResponse,HttpStatus.NOT_FOUND);
+        }
+
     }
 
 

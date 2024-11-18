@@ -5,13 +5,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const lastNameInput = document.getElementById("lastName");
   const emailInput = document.getElementById("email");
   const phoneInput = document.getElementById("phone");
-  const passwordInput = document.getElementById("password");
+
 
   const firstNameError = document.getElementById("firstNameError");
   const lastNameError = document.getElementById("lastNameError");
   const emailError = document.getElementById("emailError");
   const phoneError = document.getElementById("phoneError");
-  const passwordError = document.getElementById("passwordError");
 
   form.addEventListener("submit", (e) => {
     isValid = true;
@@ -43,19 +42,6 @@ document.addEventListener("DOMContentLoaded", function () {
       lastNameError.style.display = "none";
     }
 
-    const password = passwordInput.value;
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-    if (!password) {
-      isValid = false;
-      passwordError.textContent = "The password is required.";
-      passwordError.style.display = "block";
-    } else if(!passwordRegex.test(password)) {
-      isValid = false;
-      passwordError.textContent = "Password includes 8 characters, uppercase letters, numbers and special characters";
-      passwordError.style.display = "block";
-    }else {
-      passwordError.style.display = "none";
-    }
 
     const email = emailInput.value;
     const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/;

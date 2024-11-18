@@ -69,6 +69,7 @@ public class ProductServiceImp implements ProductService {
         newProduct.setPrice(productRequest.getPrice());
         newProduct.setCreatedAt(new Date());
         newProduct.setColor(productRequest.getColor());
+        newProduct.setStatus(true);
 
         Category category = categoryRepository.findById(productRequest.getCategoryId()).get();
         newProduct.setCategory(category);
@@ -108,9 +109,10 @@ public class ProductServiceImp implements ProductService {
     @Override
     public Product updateProduct(Long id,ProductRequest productRequest) throws Exception {
 
-        // update thumbnail
+
         Product product = getProductById(id);
 
+        // update thumbnail
         String uploadDir = "public/images/";
         if(!productRequest.getThumbnail().isEmpty()) {
 
@@ -152,7 +154,7 @@ public class ProductServiceImp implements ProductService {
         product.setFeatures(productFeaturesOld);
 
 
-        // Update product image
+        // Update product image detail
         // Xử lý ảnh thêm mới
         List<MultipartFile> imageFiles = productRequest.getImageFiles();
         if (imageFiles != null && !imageFiles.isEmpty()) {
@@ -192,31 +194,32 @@ public class ProductServiceImp implements ProductService {
     @Override
     public void deleteProduct(Long id) throws Exception {
         Product deleteProduct = getProductById(id);
-
+        deleteProduct.setStatus(!deleteProduct.isStatus());
         // try with resource
-        try {
-            //delete thumbnail đc save trên server
-            Path thumbnailPath = Paths.get("public/images/" + deleteProduct.getThumbnail());
-            try{
-                Files.delete(thumbnailPath);
-            }catch (Exception e) {
-                System.out.println("Exception: " + e.getMessage());
-            }
-            //delete details image đc save trên server
-            List<ProductImage> productImages = deleteProduct.getProductImages();
-            for(ProductImage productImage : productImages) {
-                Path imageFilePath = Paths.get("public/images/" + productImage.getImageFile());
-                try{
-                    Files.delete(imageFilePath);
-                }catch (Exception e) {
-                    System.out.println("Exception: " + e.getMessage());
-                }
-            }
+//        try {
+//            //delete thumbnail đc save trên server
+//            Path thumbnailPath = Paths.get("public/images/" + deleteProduct.getThumbnail());
+//            try{
+//                Files.delete(thumbnailPath);
+//            }catch (Exception e) {
+//                System.out.println("Exception: " + e.getMessage());
+//            }
+//            //delete details image đc save trên server
+//            List<ProductImage> productImages = deleteProduct.getProductImages();
+//            for(ProductImage productImage : productImages) {
+//                Path imageFilePath = Paths.get("public/images/" + productImage.getImageFile());
+//                try{
+//                    Files.delete(imageFilePath);
+//                }catch (Exception e) {
+//                    System.out.println("Exception: " + e.getMessage());
+//                }
+//            }
+//
+//        }catch (Exception e) {
+//            System.out.println("Exception: " + e.getMessage());
+//        }
 
-        }catch (Exception e) {
-            System.out.println("Exception: " + e.getMessage());
-        }
-        productRepository.delete(deleteProduct);
+        productRepository.save(deleteProduct);
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.example.demo1.models.Role;
 import com.example.demo1.models.User;
 import com.example.demo1.repository.RoleRepository;
 import com.example.demo1.repository.UserRepository;
+import com.example.demo1.utils.PasswordGenerator;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,6 @@ public class UserServiceImp implements UserService{
         }
         User newUserAdmin = new User();
         newUserAdmin.setEmail(user.getEmail());
-        newUserAdmin.setPassword(passwordEncoder.encode(user.getPassword()));
         newUserAdmin.setPhone(user.getPhone());
         newUserAdmin.setFirstName(user.getFirstName());
         newUserAdmin.setLastName(user.getLastName());
@@ -76,13 +76,66 @@ public class UserServiceImp implements UserService{
         if (userRole == null) {
             role = new Role("ROLE_ADMIN");
         }
-
         newUserAdmin.setRoles(Arrays.asList(userRole != null ? userRole : role));
 
         newUserAdmin.setVerificationCode(null);
         newUserAdmin.setToken(null);
         newUserAdmin.setEnabled(true);
+
+//      create random password and send with email
+        String randomPassword = PasswordGenerator.generateRandomPassword(PasswordGenerator.PASSWORD_LENGTH);
+
+        String toAddress = newUserAdmin.getEmail();
+        String fromAddress = "kimhoando2003@gmail.com";
+        String senderName = "Demo";
+        String subject = "Your password";
+        String content = "Dear [[name]],<br>" +
+                "Please enter password below to login :<br>"
+                + "Password: [[pass]]";
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setFrom(fromAddress, senderName);
+        helper.setTo(toAddress);
+        helper.setSubject(subject);
+        content = content.replace("[[name]]", newUserAdmin.getFirstName() + ' ' + newUserAdmin.getLastName());
+        content = content.replace("[[pass]]", randomPassword);
+        helper.setText(content, true);
+        javaMailSender.send(message);
+        newUserAdmin.setPassword(passwordEncoder.encode(randomPassword));
+
+
         userRepository.save(newUserAdmin);
+    }
+
+    @Override
+    public User getUserById(Long id) throws Exception {
+        return userRepository.findById(id).orElseThrow(() -> new Exception("User not found"));
+    }
+
+    @Override
+    public void updateRole(Long id) throws Exception {
+        User user = getUserById(id);
+        Collection<Role> roles = user.getRoles();
+        List<String> roleNames = roles.stream().map(role -> role.getName()).collect(Collectors.toList());
+        if(roleNames.contains("ROLE_ADMIN")) {
+            roles.clear();
+            Role existUserRole = roleRepository.findByName("ROLE_USER");
+            Role newUserRole = null;
+            if(existUserRole == null) {
+                newUserRole = new Role("ROLE_USER");
+            }
+            roles.add(existUserRole != null ? existUserRole : newUserRole);
+            userRepository.save(user);
+        }else {
+            roles.clear();
+            Role existAdminRole = roleRepository.findByName("ROLE_ADMIN");
+            Role newAdminRole = null;
+            if(existAdminRole == null) {
+                newAdminRole = new Role("ROLE_ADMIN");
+            }
+            roles.add(existAdminRole != null ? existAdminRole : newAdminRole);
+            userRepository.save(user);
+        }
     }
 
 
@@ -115,6 +168,8 @@ public class UserServiceImp implements UserService{
         userRepository.save(newUser);
         sendVerificationEmail(newUser, siteURL);
     }
+
+
 
     @Override
     public boolean verifyEmail(String verificationCode) {
@@ -152,6 +207,8 @@ public class UserServiceImp implements UserService{
         userRepository.save(existingUser);
     }
 
+
+
     private void sendToken(User user, String siteURL) throws MessagingException, UnsupportedEncodingException {
         String toAddress = user.getEmail();
         String fromAddress = "kimhoando2003@gmail.com";
@@ -169,9 +226,9 @@ public class UserServiceImp implements UserService{
         helper.setSubject(subject);
 
         content = content.replace("[[name]]", user.getFirstName() + ' ' + user.getLastName());
-        String resetPasswordURL = siteURL + "/auth/update_password";
+//        String resetPasswordURL = siteURL + "/auth/update_password";
+//        content = content.replace("[[URL]]", resetPasswordURL);
 
-        content = content.replace("[[URL]]", resetPasswordURL);
         content = content.replace("[[code]]", user.getToken());
 
         helper.setText(content, true);

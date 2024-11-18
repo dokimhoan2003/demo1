@@ -33,6 +33,7 @@ public class CategoryServiceImp implements CategoryService {
     public Category createCategory(CategoryRequest categoryRequest) {
         Category newCategory = new Category();
         newCategory.setCategoryName(categoryRequest.getCategoryName());
+        newCategory.setStatus(true);
         return categoryRepository.save(newCategory);
     }
 
@@ -45,8 +46,10 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public void deleteCategory(Long id) {
-        categoryRepository.deleteById(id);
+    public void deleteCategory(Long id) throws Exception {
+        Category category = getCategoryById(id);
+        category.setStatus(!category.isStatus());
+        categoryRepository.save(category);
     }
 
     @Override
