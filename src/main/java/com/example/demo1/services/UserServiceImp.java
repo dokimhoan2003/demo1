@@ -156,10 +156,10 @@ public class UserServiceImp implements UserService{
         newUser.setFirstName(user.getFirstName());
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
-//        Role userRole = roleRepository.findByName("ROLE_ADMIN");
+//        Role userRole = roleRepository.findByName("ROLE_USER");
 //        Role role = null;
 //        if (userRole == null) {
-//            role = new Role("ROLE_ADMIN");
+//            role = new Role("ROLE_USER");
 //        }
         Role role = new Role("ROLE_USER");
 
