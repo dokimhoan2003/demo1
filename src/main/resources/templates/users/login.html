@@ -21,13 +21,13 @@
             <form class="formLogin" method="post" th:action="@{/auth/login}" th:object="${loginRequest}">
                 <div class="mb-4">
 <!--                    <label for="email" class="form-label">Email</label>-->
-                    <input type="text" id="email" class="form-control" th:field="*{email}" placeholder="Email">
+                    <input type="text" id="email" class="form-control" th:field="*{email}" placeholder="Email*">
                     <p id="emailError" class="text-danger" style="display: none"></p>
                 </div>
 
                 <div class="mb-4">
 <!--                    <label for="password" class="form-label">Password</label>-->
-                    <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Password">
+                    <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Password*">
                     <p id="passwordError" class="text-danger" style="display: none"></p>
                 </div>
 

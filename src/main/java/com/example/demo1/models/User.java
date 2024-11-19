@@ -3,6 +3,7 @@ package com.example.demo1.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Entity
@@ -37,6 +38,7 @@ public class User {
     @Column(name = "token",length = 64)
     private String token;
 
-
     private boolean enabled;
+
+    private LocalDateTime verificationExpiryDate;
 }

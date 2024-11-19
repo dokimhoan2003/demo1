@@ -23,6 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -81,6 +82,7 @@ public class UserServiceImp implements UserService{
         newUserAdmin.setVerificationCode(null);
         newUserAdmin.setToken(null);
         newUserAdmin.setEnabled(true);
+        newUserAdmin.setVerificationExpiryDate(null);
 
 //      create random password and send with email
         String randomPassword = PasswordGenerator.generateRandomPassword(PasswordGenerator.PASSWORD_LENGTH);
@@ -119,12 +121,13 @@ public class UserServiceImp implements UserService{
         List<String> roleNames = roles.stream().map(role -> role.getName()).collect(Collectors.toList());
         if(roleNames.contains("ROLE_ADMIN")) {
             roles.clear();
-            Role existUserRole = roleRepository.findByName("ROLE_USER");
-            Role newUserRole = null;
-            if(existUserRole == null) {
-                newUserRole = new Role("ROLE_USER");
-            }
-            roles.add(existUserRole != null ? existUserRole : newUserRole);
+//            Role existUserRole = roleRepository.findByName("ROLE_USER");
+//            Role newUserRole = null;
+//            if(existUserRole == null) {
+//                newUserRole = new Role("ROLE_USER");
+//            }
+            Role role = new Role("ROLE_USER");
+            roles.add(role);
             userRepository.save(user);
         }else {
             roles.clear();
@@ -153,17 +156,21 @@ public class UserServiceImp implements UserService{
         newUser.setFirstName(user.getFirstName());
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        Role userRole = roleRepository.findByName("ROLE_USER");
-        Role role = null;
-        if (userRole == null) {
-            role = new Role("ROLE_USER");
-        }
+//        Role userRole = roleRepository.findByName("ROLE_ADMIN");
+//        Role role = null;
+//        if (userRole == null) {
+//            role = new Role("ROLE_ADMIN");
+//        }
+        Role role = new Role("ROLE_USER");
 
-        newUser.setRoles(Arrays.asList(userRole != null ? userRole : role));
+        newUser.setRoles(Arrays.asList(role));
 
         String randomCode = UUID.randomUUID().toString();
         newUser.setVerificationCode(randomCode);
         newUser.setEnabled(false);
+
+        LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(15);
+        newUser.setVerificationExpiryDate(expiryDate);
 
         userRepository.save(newUser);
         sendVerificationEmail(newUser, siteURL);
@@ -174,11 +181,17 @@ public class UserServiceImp implements UserService{
     @Override
     public boolean verifyEmail(String verificationCode) {
         User user = userRepository.findByVerificationCode(verificationCode);
-        if(user == null || user.isEnabled()) {
+        if(user == null) {
+            return false;
+        } else if(user.getVerificationExpiryDate().isBefore(LocalDateTime.now())) {
+            userRepository.deleteById(user.getId());
+            return false;
+        } else if(user.isEnabled()) {
             return false;
         }else {
             user.setVerificationCode(null);
             user.setEnabled(true);
+            user.setVerificationExpiryDate(null);
             userRepository.save(user);
             return true;
         }
