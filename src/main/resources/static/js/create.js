@@ -21,28 +21,27 @@ document.addEventListener("DOMContentLoaded", function () {
   const maxSize = 10 * 1024 * 1024; // 10MB for file size
   const validFileTypes = ["image/jpeg", "image/png", "image/jpg"];
 
-    let selectedThumbnail = [];
-    const previewSelectedThumbnail = () => {
-        const thumbnailPreview = document.getElementById("thumbnailPreview");
-            thumbnailPreview.innerHTML = "";
-            selectedThumbnail.forEach((file, index) => {
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                // Khi đọc file hoàn tất
-                const thumbnailElement = document.createElement("div");
-                thumbnailElement.classList.add("me-2", "mb-2", "position-relative");
-                thumbnailElement.innerHTML = `<img src="${e.target.result}" alt="Image" class="img-thumbnail" width="100">
+  let selectedThumbnail = [];
+  const previewSelectedThumbnail = () => {
+    const thumbnailPreview = document.getElementById("thumbnailPreview");
+    thumbnailPreview.innerHTML = "";
+    selectedThumbnail.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Khi đọc file hoàn tất
+        const thumbnailElement = document.createElement("div");
+        thumbnailElement.classList.add("me-2", "mb-2", "position-relative");
+        thumbnailElement.innerHTML = `<img src="${e.target.result}" alt="Image" class="img-thumbnail" width="100">
                     `;
-                thumbnailPreview.appendChild(thumbnailElement);
-              };
-              reader.readAsDataURL(file); // đọc file
-            });
-            const dataTransfer = new DataTransfer();
-            selectedThumbnail.forEach((image) => dataTransfer.items.add(image));
-            thumbnailFileInput.files[0] = dataTransfer.files[0]; // Cập nhật trường input
-            selectedThumbnail.length = 0;
-    }
-
+        thumbnailPreview.appendChild(thumbnailElement);
+      };
+      reader.readAsDataURL(file); // đọc file
+    });
+    const dataTransfer = new DataTransfer();
+    selectedThumbnail.forEach((image) => dataTransfer.items.add(image));
+    thumbnailFileInput.files[0] = dataTransfer.files[0]; // Cập nhật trường input
+    selectedThumbnail.length = 0;
+  };
 
   // Immediate feedback for image file size on file change
   thumbnailFileInput.addEventListener("change", function (e) {
@@ -66,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   let selectedDetailImages = [];
-  let totalImageFileUpload = 0;
+  // let totalImageFileUpload = 0;
   imageFilesInput.addEventListener("change", function (e) {
     var files = e.target.files;
 
@@ -74,22 +73,20 @@ document.addEventListener("DOMContentLoaded", function () {
     selectedDetailImages.push(...newFiles);
 
     for (var i = 0; i < files.length; i++) {
-        totalImageFileUpload += files.length;
-        var file = files[i];
-        if (file.size > maxSize) {
-            isValid = false;
-            imageFilesError.style.display = "block";
-            imageFilesError.textContent = `File ${file.name} is too large! Maximum size is 10MB`;
-            e.target.value = "";
-            break;
-        } else {
-            imageFilesError.style.display = "none";
-         }
+      // totalImageFileUpload += files.length;
+      var file = files[i];
+      if (file.size > maxSize) {
+        isValid = false;
+        imageFilesError.style.display = "block";
+        imageFilesError.textContent = `File ${file.name} is too large! Maximum size is 10MB`;
+        e.target.value = "";
+        break;
+      } else {
+        imageFilesError.style.display = "none";
+      }
     }
 
-
     previewSelectedImages();
-
   });
   const previewSelectedImages = () => {
     const imageDetailsPreview = document.getElementById("imageDetailsPreview");
@@ -236,14 +233,9 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-
     // validate images file
     const files = imageFilesInput.files;
-    if(totalImageFileUpload > 6) {
-        isValid = false;
-        imageFilesError.style.display = "block";
-        imageFilesError.textContent = "Number detail image must be <= 6";
-    }else if (files.length > 6) {
+    if (files.length > 6) {
       isValid = false;
       imageFilesError.style.display = "block";
       imageFilesError.textContent = "Number detail image must be <= 6";

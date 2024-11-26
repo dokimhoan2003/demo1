@@ -1,19 +1,28 @@
 package com.example.demo1.controllers;
 
 import com.example.demo1.models.Category;
+import com.example.demo1.models.CustomerUserDetails;
+import com.example.demo1.models.Notification;
 import com.example.demo1.request.CategoryRequest;
 import com.example.demo1.response.MessageResponse;
 import com.example.demo1.services.CategoryService;
+import com.example.demo1.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/categories")
@@ -21,6 +30,13 @@ public class CategoryController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private SimpMessagingTemplate template;
+
+    @Autowired
+    private NotificationService notificationService;
+
 
     @GetMapping("/check-name")
     @ResponseBody
@@ -49,6 +65,7 @@ public class CategoryController {
         model.addAttribute("categories",categories);
         model.addAttribute("totalPages",categories.getTotalPages());
         model.addAttribute("currentPage",page);
+        model.addAttribute("notifications",notificationService.getAllNotification());
         return "categories/list";
     }
 
@@ -56,13 +73,31 @@ public class CategoryController {
     public String createCategory(Model model) {
         CategoryRequest categoryRequest = new CategoryRequest();
         model.addAttribute("categoryRequest",categoryRequest);
+        model.addAttribute("notifications",notificationService.getAllNotification());
         return "categories/create";
     }
 
     @PostMapping("/create")
     public String handleCreateCategory(Model model,
                                        @ModelAttribute("categoryRequest") CategoryRequest categoryRequest) {
-        categoryService.createCategory(categoryRequest);
+        Category createdCategory = categoryService.createCategory(categoryRequest);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomerUserDetails customerUserDetails = (CustomerUserDetails) authentication.getPrincipal();
+        String notificationCreateCategory = customerUserDetails.getUsername()
+                + " created "
+                + " category"
+                + " with id: "
+                + createdCategory.getId();
+        Map<String, String> message = new HashMap<>();
+        message.put("content", notificationCreateCategory);
+        template.convertAndSend("/topic/notificationCreateCategory", message);
+
+        Notification notification = new Notification();
+        notification.setContent(notificationCreateCategory);
+        notification.setCreatedAt(LocalDateTime.now());
+        notificationService.saveNotification(notification);
+
         model.addAttribute("categoryRequest",categoryRequest);
         return "redirect:/categories";
     }
@@ -76,6 +111,7 @@ public class CategoryController {
             CategoryRequest categoryRequest = new CategoryRequest();
             categoryRequest.setCategoryName(category.getCategoryName());
             model.addAttribute("categoryRequest",categoryRequest);
+            model.addAttribute("notifications",notificationService.getAllNotification());
 
             return "categories/update";
         }catch (Exception e) {
@@ -88,7 +124,23 @@ public class CategoryController {
                                        @PathVariable Long id,
                                        @ModelAttribute CategoryRequest categoryRequest) {
         try {
-            categoryService.updateCategory(id,categoryRequest);
+
+            Category updatedCategory = categoryService.updateCategory(id,categoryRequest);
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomerUserDetails customerUserDetails = (CustomerUserDetails) authentication.getPrincipal();
+            String notificationUpdateCategory = customerUserDetails.getUsername()
+                    +" edit category with id: "
+                    + updatedCategory.getId();
+            Map<String, String> message = new HashMap<>();
+            message.put("content", notificationUpdateCategory);
+            template.convertAndSend("/topic/notificationUpdateCategory", message);
+
+            Notification notification = new Notification();
+            notification.setContent(message.get("content"));
+            notification.setCreatedAt(LocalDateTime.now());
+            notificationService.saveNotification(notification);
+            
             model.addAttribute("categoryRequest",categoryRequest);
             return "redirect:/categories";
         }catch (Exception e) {
@@ -103,6 +155,20 @@ public class CategoryController {
         MessageResponse messageResponse = new MessageResponse();
         try {
             categoryService.deleteCategory(id);
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomerUserDetails customerUserDetails = (CustomerUserDetails) authentication.getPrincipal();
+            String notificationDeleteCategory = customerUserDetails.getUsername()
+                    +" has changed category status with id: "
+                    + id;
+            Map<String, String> message = new HashMap<>();
+            message.put("content", notificationDeleteCategory);
+            template.convertAndSend("/topic/notificationDeleteCategory", message);
+            Notification notification = new Notification();
+            notification.setContent(message.get("content"));
+            notification.setCreatedAt(LocalDateTime.now());
+            notificationService.saveNotification(notification);
+
             messageResponse.setMessage("Delete Successfully");
             return new ResponseEntity<>(messageResponse, HttpStatus.OK);
         }catch (Exception e) {
@@ -111,8 +177,6 @@ public class CategoryController {
         }
 
     }
-
-
 
 
 }

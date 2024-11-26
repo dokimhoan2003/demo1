@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // connect client and server use SockJS
+// connect client and server use SockJS
   var socket = new SockJS("/ws");
   var stompClient = Stomp.over(socket);
 
@@ -32,17 +32,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+
   const showNotification = (notification) => {
     var badge = document.querySelector(".badge-number");
-    if (badge.textContent) {
-      badge.textContent = parseInt(badge.textContent) + 1;
-    } else {
-      badge.textContent = 1;
-    }
-
-    if (badge.classList.contains("d-none")) {
-      badge.classList.remove("d-none");
-    }
+    badge.textContent = 1;
 
     var notificationList = document.querySelector(".notifications .separation");
     var newNotification = `
@@ -53,41 +46,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                     <p>${notification}</p>
                                     <p>Just now</p>
                                 </div>
-                                <i class="bi bi-dot text-primary"></i>
                             </li>
                         `;
     notificationList.insertAdjacentHTML("afterend", newNotification);
   };
-  var bell = document.querySelector(".bell");
-  var badge = document.querySelector(".badge-number");
-  bell.addEventListener("click", () => {
-    badge.textContent = "";
-    badge.classList.add("d-none");
-  });
-
-  let categoryId;
-  document.querySelectorAll(".btn-delete").forEach((button) => {
-    button.addEventListener("click", function () {
-      categoryId = parseInt(this.getAttribute("data-id"));
-    });
-  });
-
-  document
-    .getElementById("btnConfirmDelete")
-    .addEventListener("click", async function () {
-      try {
-        const response = await fetch(
-          `http://192.84.103.230:9898/categories/${categoryId}/confirm-delete`
-        );
-        if (!response.ok) throw new Error("Network response was not ok");
-        const result = await response.json();
-        if (result.message === "Delete Successfully") {
-          location.reload();
-        } else {
-          alert("Xóa không thành công");
-        }
-      } catch (error) {
-        console.error("Error delete:", error);
-      }
-    });
 });

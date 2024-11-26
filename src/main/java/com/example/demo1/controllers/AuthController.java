@@ -106,7 +106,7 @@ public class AuthController {
                     .map(authority -> authority.getAuthority()).collect(Collectors.toList());
             if(role.contains("ROLE_ADMIN")) {
 //                model.addAttribute("loginRequest",loginRequest);
-                return "redirect:/products";
+                return "redirect:/categories";
             }else {
 //                model.addAttribute("loginRequest",loginRequest);
                 return "redirect:/home";

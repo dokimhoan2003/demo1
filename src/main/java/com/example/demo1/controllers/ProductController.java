@@ -1,11 +1,10 @@
 package com.example.demo1.controllers;
 
-import com.example.demo1.models.Category;
-import com.example.demo1.models.Product;
-import com.example.demo1.models.ProductFeature;
+import com.example.demo1.models.*;
 import com.example.demo1.request.ProductRequest;
 import com.example.demo1.response.MessageResponse;
 import com.example.demo1.services.CategoryService;
+import com.example.demo1.services.NotificationService;
 import com.example.demo1.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,8 +23,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/products")
@@ -34,6 +39,11 @@ public class ProductController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private SimpMessagingTemplate template;
+
+    @Autowired
+    private NotificationService notificationService;
 
 
     @GetMapping("/check-name")
@@ -106,6 +116,8 @@ public class ProductController {
         model.addAttribute("totalPages", products.getTotalPages());
         model.addAttribute("currentPage", page);
 
+        model.addAttribute("notifications",notificationService.getAllNotification());
+
         return "products/index";
     }
 
@@ -115,6 +127,9 @@ public class ProductController {
         model.addAttribute("productRequest",productRequest);
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories",categories);
+
+        model.addAttribute("notifications",notificationService.getAllNotification());
+
         return "products/create";
     }
 
@@ -123,7 +138,23 @@ public class ProductController {
     public String createProduct(@Valid @ModelAttribute ProductRequest productRequest,
                                 BindingResult result, Model model) throws IOException {
 
-        Product product = productService.createProduct(productRequest);
+        Product createdProduct = productService.createProduct(productRequest);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomerUserDetails customerUserDetails = (CustomerUserDetails) authentication.getPrincipal();
+        String notificationCreateProduct = customerUserDetails.getUsername()
+                + " created "
+                + " product"
+                + " with id: "
+                + createdProduct.getId();
+        Map<String, String> message = new HashMap<>();
+        message.put("content", notificationCreateProduct);
+        template.convertAndSend("/topic/notificationCreateProduct", message);
+        Notification notification = new Notification();
+        notification.setContent(notificationCreateProduct);
+        notification.setCreatedAt(LocalDateTime.now());
+        notificationService.saveNotification(notification);
+
         return "redirect:/products";
     }
 
@@ -153,6 +184,7 @@ public class ProductController {
             List<Category> categories = categoryService.getAllCategories();
             model.addAttribute("categories",categories);
             model.addAttribute("productRequest",productRequest);
+            model.addAttribute("notifications",notificationService.getAllNotification());
 
 
             return "products/update";
@@ -178,6 +210,19 @@ public class ProductController {
 
         productService.updateProduct(id, productRequest);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomerUserDetails customerUserDetails = (CustomerUserDetails) authentication.getPrincipal();
+        String notificationUpdateProduct = customerUserDetails.getUsername()
+                +" edit product with id: "
+                + id;
+        Map<String, String> message = new HashMap<>();
+        message.put("content", notificationUpdateProduct);
+        template.convertAndSend("/topic/notificationUpdateProduct", message);
+        Notification notification = new Notification();
+        notification.setContent(notificationUpdateProduct);
+        notification.setCreatedAt(LocalDateTime.now());
+        notificationService.saveNotification(notification);
+
         MessageResponse messageResponse = new MessageResponse();
         messageResponse.setMessage("Update successfully");
         return new ResponseEntity<>(messageResponse,HttpStatus.OK);
@@ -189,6 +234,19 @@ public class ProductController {
         MessageResponse messageResponse = new MessageResponse();
         try {
             productService.deleteProduct(id);
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomerUserDetails customerUserDetails = (CustomerUserDetails) authentication.getPrincipal();
+            String notificationDeleteProduct = customerUserDetails.getUsername()
+                    +" has changed product status with id: "
+                    + id;
+            Map<String, String> message = new HashMap<>();
+            message.put("content", notificationDeleteProduct);
+            template.convertAndSend("/topic/notificationDeleteProduct", message);
+            Notification notification = new Notification();
+            notification.setContent(notificationDeleteProduct);
+            notification.setCreatedAt(LocalDateTime.now());
+            notificationService.saveNotification(notification);
 
             messageResponse.setMessage("Delete Successfully");
             return new ResponseEntity<>(messageResponse,HttpStatus.OK);

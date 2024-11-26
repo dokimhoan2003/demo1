@@ -4,6 +4,7 @@ import com.example.demo1.models.CustomerUserDetails;
 import com.example.demo1.models.Role;
 import com.example.demo1.models.User;
 import com.example.demo1.repository.UserRepository;
+import com.example.demo1.services.NotificationService;
 import com.example.demo1.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private NotificationService notificationService;
+
 
 
     @GetMapping("")
@@ -36,6 +40,9 @@ public class UserController {
         model.addAttribute("users",users);
         model.addAttribute("totalPages",users.getTotalPages());
         model.addAttribute("currentPage",page);
+
+        model.addAttribute("notifications",notificationService.getAllNotification());
+
         return "users/list";
     }
 
@@ -78,6 +85,7 @@ public class UserController {
     public String createAccountAdmin(Model model) {
         User user = new User();
         model.addAttribute("user",user);
+        model.addAttribute("notifications",notificationService.getAllNotification());
         return "users/create_admin";
     }
 

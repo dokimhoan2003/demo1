@@ -24,6 +24,10 @@
 
     <link rel="stylesheet" type="text/css" th:href="@{/css/index.css}"/>
     <script th:src="@{/js/create.js}"></script>
+    <!--    websocket start-->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+    <!--    websocket end-->
   </head>
   <body>
   <!-- ======= Header ======= -->
@@ -310,6 +314,7 @@
         </div>
       </div>
     </main>
+
 
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
